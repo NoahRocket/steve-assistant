@@ -1,55 +1,188 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <!-- Character Encoding -->
-    <meta charset="utf-8" />
-    
-    <!-- Viewport for Responsive Design -->
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    
-    <!-- Favicon -->
-    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
-    
-    <!-- Apple Touch Icon -->
-    <link rel="apple-touch-icon" sizes="180x180" href="%PUBLIC_URL%/apple-touch-icon.png" />
-    
-    <!-- Manifest for Progressive Web App -->
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    
-    <!-- Title of the Application -->
-    <title>Steve - Product Owner Assistant</title>
-    
-    <!-- Meta Description for SEO -->
-    <meta name="description" content="Steve - Your Product Owner Assistant for efficient sprint planning and team management." />
-    
-    <!-- Meta Keywords for SEO -->
-    <meta name="keywords" content="Product Owner, Sprint Planning, Team Management, Agile, Scrum" />
-    
-    <!-- Author Meta Tag -->
-    <meta name="author" content="Your Name" />
-    
-    <!-- Google Fonts (Optional) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
-      rel="stylesheet"
-    />
-    
-    <!-- Tailwind CSS (If Using via CDN for Initial Setup) -->
-    <!-- Note: For production, it's recommended to install Tailwind via npm and configure it with PostCSS -->
-    <!-- <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"> -->
-    
-    <!-- Additional Stylesheets or Scripts can be included here -->
-  </head>
-  
-  <body class="bg-gray-100 font-roboto">
-    <!-- Root Div for React Application -->
-    <div id="root"></div>
-    
-    <!-- 
-      React's JavaScript bundle will be automatically injected here during the build process.
-      Avoid adding script tags manually unless necessary.
-    -->
-  </body>
+<head>
+    <meta charset="UTF-8">
+    <title>Steve</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        header {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .section {
+            margin-bottom: 30px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"], input[type="number"] {
+            padding: 8px;
+            width: 300px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 8px 12px;
+            margin-top: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .team-member {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .team-member input {
+            margin-right: 10px;
+        }
+        .add-member {
+            background-color: #007bff;
+        }
+        .add-member:hover {
+            background-color: #0069d9;
+        }
+        .save-team {
+            background-color: #17a2b8;
+        }
+        .save-team:hover {
+            background-color: #138496;
+        }
+    </style>
+</head>
+<body>
+
+    <header>Steve</header>
+
+    <div class="section" id="team-section">
+        <label for="team-name">Enter Your Team's Name:</label>
+        <input type="text" id="team-name" placeholder="Team Name">
+        <br>
+        <button class="save-team" onclick="saveTeamName()">Save Team Name</button>
+    </div>
+
+    <div class="section" id="members-section" style="display:none;">
+        <h2>Team Members</h2>
+        <div id="members-list">
+            <!-- Team member rows will go here -->
+        </div>
+        <button class="add-member" onclick="addMemberRow()">+</button>
+        <br>
+        <button class="save-team" onclick="saveTeamMembers()">Save Team Members</button>
+    </div>
+
+    <script>
+        // Function to save the team name
+        function saveTeamName() {
+            const teamNameInput = document.getElementById('team-name');
+            const teamName = teamNameInput.value.trim();
+            if (teamName === "") {
+                alert("Please enter a team name.");
+                return;
+            }
+            localStorage.setItem('teamName', teamName);
+            alert("Team name saved!");
+            document.getElementById('team-section').style.display = 'none';
+            document.getElementById('members-section').style.display = 'block';
+            loadTeamMembers();
+        }
+
+        // Function to add a new team member row
+        function addMemberRow(name = '', capacity = '') {
+            const membersList = document.getElementById('members-list');
+
+            const memberDiv = document.createElement('div');
+            memberDiv.className = 'team-member';
+
+            const nameInput = document.createElement('input');
+            nameInput.type = 'text';
+            nameInput.placeholder = 'Member Name';
+            nameInput.value = name;
+
+            const capacityInput = document.createElement('input');
+            capacityInput.type = 'number';
+            capacityInput.placeholder = 'Capacity';
+            capacityInput.value = capacity;
+
+            const removeButton = document.createElement('button');
+            removeButton.textContent = 'Remove';
+            removeButton.style.backgroundColor = '#dc3545';
+            removeButton.style.marginLeft = '10px';
+            removeButton.style.padding = '6px 10px';
+            removeButton.style.border = 'none';
+            removeButton.style.borderRadius = '4px';
+            removeButton.style.color = 'white';
+            removeButton.style.cursor = 'pointer';
+            removeButton.onclick = function() {
+                membersList.removeChild(memberDiv);
+            };
+
+            memberDiv.appendChild(nameInput);
+            memberDiv.appendChild(capacityInput);
+            memberDiv.appendChild(removeButton);
+
+            membersList.appendChild(memberDiv);
+        }
+
+        // Function to save team members to localStorage
+        function saveTeamMembers() {
+            const membersList = document.getElementById('members-list');
+            const members = [];
+            const memberDivs = membersList.getElementsByClassName('team-member');
+            for (let div of memberDivs) {
+                const inputs = div.getElementsByTagName('input');
+                const name = inputs[0].value.trim();
+                const capacity = inputs[1].value.trim();
+                if (name !== "" && capacity !== "") {
+                    members.push({ name, capacity });
+                }
+            }
+            if (members.length === 0) {
+                alert("Please add at least one team member with capacity.");
+                return;
+            }
+            localStorage.setItem('teamMembers', JSON.stringify(members));
+            alert("Team members saved!");
+        }
+
+        // Function to load team name and team members from localStorage
+        function loadData() {
+            const savedTeamName = localStorage.getItem('teamName');
+            if (savedTeamName) {
+                document.getElementById('team-section').style.display = 'none';
+                document.getElementById('members-section').style.display = 'block';
+                loadTeamMembers();
+            }
+        }
+
+        // Function to load team members from localStorage
+        function loadTeamMembers() {
+            const savedMembers = localStorage.getItem('teamMembers');
+            if (savedMembers) {
+                const members = JSON.parse(savedMembers);
+                for (let member of members) {
+                    addMemberRow(member.name, member.capacity);
+                }
+            } else {
+                addMemberRow(); // Add an empty row by default
+            }
+        }
+
+        // Initialize the page by loading existing data if any
+        window.onload = loadData;
+    </script>
+
+</body>
 </html>
