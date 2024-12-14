@@ -1,14 +1,11 @@
 import React from 'react';
-import axios from 'axios';
+import xaiService from '../services/xaiService';
 
 const ReportButtons = ({ userStories, teamData }) => {
   const handleGenerateSummary = async () => {
     try {
-      const response = await axios.post('https://api.xai.com/generate-summary', {
-        userStories,
-        teamData,
-      });
-      const summary = response.data.summary;
+      const data = await xaiService.generateSummary(userStories, teamData);
+      const summary = data.summary;
       alert(`Summary Generated:\n\n${summary}`);
     } catch (error) {
       console.error(error);
@@ -18,11 +15,8 @@ const ReportButtons = ({ userStories, teamData }) => {
 
   const handleSuggestSprintGoal = async () => {
     try {
-      const response = await axios.post('https://api.xai.com/suggest-sprint-goal', {
-        userStories,
-        teamData,
-      });
-      const sprintGoal = response.data.sprintGoal;
+      const data = await xaiService.suggestSprintGoal(userStories, teamData);
+      const sprintGoal = data.sprintGoal;
       alert(`Suggested Sprint Goal:\n\n${sprintGoal}`);
     } catch (error) {
       console.error(error);
@@ -32,11 +26,8 @@ const ReportButtons = ({ userStories, teamData }) => {
 
   const handleGenerateReviewNotes = async () => {
     try {
-      const response = await axios.post('https://api.xai.com/generate-review-notes', {
-        userStories,
-        teamData,
-      });
-      const reviewNotes = response.data.reviewNotes;
+      const data = await xaiService.generateReviewNotes(userStories, teamData);
+      const reviewNotes = data.reviewNotes;
       alert(`Sprint Review Notes:\n\n${reviewNotes}`);
     } catch (error) {
       console.error(error);
@@ -45,7 +36,7 @@ const ReportButtons = ({ userStories, teamData }) => {
   };
 
   return (
-    <div className="flex space-x-4">
+    <div className="flex space-x-4 mt-6">
       <button
         onClick={handleGenerateSummary}
         className="px-4 py-2 bg-indigo-500 text-white rounded"
