@@ -1,33 +1,54 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Header from './components/Header';
 import TeamSetup from './components/TeamSetup';
 import Dashboard from './components/Dashboard';
+import SprintReview from './components/SprintReview';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 function App() {
-  const [teamData, setTeamData] = useState(() => {
-    const savedData = localStorage.getItem('teamData');
-    return savedData ? JSON.parse(savedData) : null;
+  const [teamData, setTeamData] = useState(null);
+  const [reports, setReports] = useState({
+    summary: '',
+    sprintGoal: '',
+    reviewNotes: '',
   });
 
   const handleSetupComplete = (data) => {
     setTeamData(data);
   };
 
-  useEffect(() => {
-    if (teamData) {
-      localStorage.setItem('teamData', JSON.stringify(teamData));
-    }
-  }, [teamData]);
+  const handleReports = (newReports) => {
+    setReports(newReports);
+  };
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <Header />
-      {!teamData ? (
-        <TeamSetup onSetupComplete={handleSetupComplete} />
-      ) : (
-        <Dashboard teamData={teamData} />
-      )}
-    </div>
+    <Router>
+      <div className="min-h-screen bg-gray-100">
+        <Header />
+        <Routes>
+          <Route
+            path="/"
+            element={
+              !teamData ? (
+                <TeamSetup onSetupComplete={handleSetupComplete} />
+              ) : (
+                <Dashboard teamData={teamData} />
+              )
+            }
+          />
+          <Route
+            path="/sprint-review"
+            element={
+              <SprintReview
+                summary={reports.summary}
+                sprintGoal={reports.sprintGoal}
+                reviewNotes={reports.reviewNotes}
+              />
+            }
+          />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 
