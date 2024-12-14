@@ -2,9 +2,16 @@ import React, { useState } from 'react';
 import HeatMap from './HeatMap';
 import ReportButtons from './ReportButtons';
 import UserStoryAssignment from './UserStoryAssignment';
+import { useNavigate } from 'react-router-dom';
 
 const Dashboard = ({ teamData }) => {
   const [userStories, setUserStories] = useState([]);
+  const [reports, setReports] = useState({
+    summary: '',
+    sprintGoal: '',
+    reviewNotes: '',
+  });
+  const navigate = useNavigate();
 
   const handleAddUserStory = (story) => {
     setUserStories([...userStories, story]);
@@ -35,7 +42,11 @@ const Dashboard = ({ teamData }) => {
         teamMembers={teamData.teamMembers}
         onAddStory={handleAddUserStory}
       />
-      <ReportButtons userStories={userStories} teamData={teamData} />
+      <ReportButtons
+        userStories={userStories}
+        teamData={teamData}
+        setReports={setReports}
+      />
     </div>
   );
 };
