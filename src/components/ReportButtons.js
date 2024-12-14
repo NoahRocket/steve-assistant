@@ -1,12 +1,15 @@
 import React from 'react';
 import xaiService from '../services/xaiService';
+import { useNavigate } from 'react-router-dom';
 
-const ReportButtons = ({ userStories, teamData }) => {
+const ReportButtons = ({ userStories, teamData, setReports }) => {
+  const navigate = useNavigate();
+
   const handleGenerateSummary = async () => {
     try {
       const data = await xaiService.generateSummary(userStories, teamData);
       const summary = data.summary;
-      alert(`Summary Generated:\n\n${summary}`);
+      setReports((prev) => ({ ...prev, summary }));
     } catch (error) {
       console.error(error);
       alert('Failed to generate summary.');
@@ -17,7 +20,7 @@ const ReportButtons = ({ userStories, teamData }) => {
     try {
       const data = await xaiService.suggestSprintGoal(userStories, teamData);
       const sprintGoal = data.sprintGoal;
-      alert(`Suggested Sprint Goal:\n\n${sprintGoal}`);
+      setReports((prev) => ({ ...prev, sprintGoal }));
     } catch (error) {
       console.error(error);
       alert('Failed to suggest sprint goal.');
@@ -28,7 +31,8 @@ const ReportButtons = ({ userStories, teamData }) => {
     try {
       const data = await xaiService.generateReviewNotes(userStories, teamData);
       const reviewNotes = data.reviewNotes;
-      alert(`Sprint Review Notes:\n\n${reviewNotes}`);
+      setReports((prev) => ({ ...prev, reviewNotes }));
+      navigate('/sprint-review');
     } catch (error) {
       console.error(error);
       alert('Failed to generate review notes.');
