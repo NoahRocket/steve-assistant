@@ -84,6 +84,22 @@
         .edit-button:hover {
             background-color: #e0a800;
         }
+        .remove-button {
+            background-color: #dc3545;
+            padding: 6px 10px;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+        }
+        .remove-button:hover {
+            background-color: #c82333;
+        }
+        /* Disabled input styles */
+        input[disabled] {
+            background-color: #f5f5f5;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 <body>
@@ -116,7 +132,19 @@
         <div id="members-list">
             <!-- Team member rows will go here -->
         </div>
-        <button class="add-member" onclick="addMemberRow()">+</button>
+        <button class="add-member" id="add-member-button" onclick="addMemberRow()">+</button>
+        <br>
+        <button class="save-team" id="save-members-button" onclick="saveTeamMembers()">Save Team Members</button>
+        <button class="edit-button" id="edit-members-button" onclick="enableEditTeamMembers()" style="display:none;">Edit Team Members</button>
+    </div>
+
+    <!-- Team Members Edit Section (Hidden by Default) -->
+    <div class="section" id="edit-members-section" style="display:none;">
+        <h2>Edit Team Members</h2>
+        <div id="edit-members-list">
+            <!-- Editable team member rows will go here -->
+        </div>
+        <button class="add-member" id="edit-add-member-button" onclick="addMemberRow()">+</button>
         <br>
         <button class="save-team" onclick="saveTeamMembers()">Save Team Members</button>
     </div>
@@ -183,13 +211,7 @@
 
             const removeButton = document.createElement('button');
             removeButton.textContent = 'Remove';
-            removeButton.style.backgroundColor = '#dc3545';
-            removeButton.style.marginLeft = '10px';
-            removeButton.style.padding = '6px 10px';
-            removeButton.style.border = 'none';
-            removeButton.style.borderRadius = '4px';
-            removeButton.style.color = 'white';
-            removeButton.style.cursor = 'pointer';
+            removeButton.className = 'remove-button';
             removeButton.onclick = function() {
                 membersList.removeChild(memberDiv);
             };
@@ -220,6 +242,35 @@
             }
             localStorage.setItem('teamMembers', JSON.stringify(members));
             alert("Team members saved!");
+            lockTeamMembersInputs();
+        }
+
+        // Function to lock team members inputs after saving
+        function lockTeamMembersInputs() {
+            const membersList = document.getElementById('members-list');
+            const inputs = membersList.querySelectorAll('input');
+            inputs.forEach(input => {
+                input.disabled = true;
+            });
+            // Hide Save button and Add Member button
+            document.getElementById('save-members-button').style.display = 'none';
+            document.getElementById('add-member-button').style.display = 'none';
+            // Show Edit Team Members button
+            document.getElementById('edit-members-button').style.display = 'inline-block';
+        }
+
+        // Function to unlock team members inputs for editing
+        function enableEditTeamMembers() {
+            const membersList = document.getElementById('members-list');
+            const inputs = membersList.querySelectorAll('input');
+            inputs.forEach(input => {
+                input.disabled = false;
+            });
+            // Show Save button and Add Member button
+            document.getElementById('save-members-button').style.display = 'inline-block';
+            document.getElementById('add-member-button').style.display = 'inline-block';
+            // Hide Edit Team Members button
+            document.getElementById('edit-members-button').style.display = 'none';
         }
 
         // Function to load team name and team members from localStorage
@@ -243,6 +294,7 @@
                 for (let member of members) {
                     addMemberRow(member.name, member.capacity);
                 }
+                lockTeamMembersInputs();
             } else {
                 addMemberRow(); // Add an empty row by default
             }
