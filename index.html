@@ -146,6 +146,16 @@
         .story-actions .delete-story:hover {
             background-color: #c82333;
         }
+         /* Collapsed styles */
+        .section.collapsed .section-content {
+            display: none;
+        }
+        .section.collapsed h2 {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -176,14 +186,18 @@
     </div>
 
     <!-- Team Members Section -->
-    <div class="section" id="members-section" style="display:none;">
-        <h2>Team Members</h2>
-        <div id="members-list">
-            <!-- Team member rows will go here -->
-        </div>
-        <button class="add-member" id="add-member-button" onclick="addMemberRow()">+</button>
-        <br>
-        <button class="save-team" id="save-members-button" onclick="saveTeamMembers()">Save Team Members</button>
+    <div class="section collapsed" id="members-section" style="display:none;">
+        <h2 onclick="toggleSection('members-section')">Team Members 
+             <button class="edit-button" id="edit-members-button" onclick="enableEditTeamMembers()" style="display:none;">Edit</button>
+        </h2>
+        <div class="section-content">
+             <div id="members-list">
+                 <!-- Team member rows will go here -->
+             </div>
+             <button class="add-member" id="add-member-button" onclick="addMemberRow()">+</button>
+             <br>
+             <button class="save-team" id="save-members-button" onclick="saveTeamMembers()">Save Team Members</button>
+         </div>
     </div>
 
     <!-- User Stories Section -->
@@ -226,6 +240,13 @@
     </div>
 
     <script>
+
+         // Function to toggle a section's collapsed state
+         function toggleSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            section.classList.toggle('collapsed');
+        }
+         
         // Function to save the team name initially
         function saveTeamName() {
             const teamNameInput = document.getElementById('team-name');
@@ -315,13 +336,13 @@
                     members.push({ name, capacity });
                 }
             }
-            if (members.length === 0) {
+             if (members.length === 0) {
                 alert("Please add at least one team member with capacity.");
                 return;
             }
             localStorage.setItem('teamMembers', JSON.stringify(members));
             alert("Team members saved!");
-            lockTeamMembersInputs();
+             lockTeamMembersInputs();
             loadUserStoriesSection();
         }
 
@@ -335,8 +356,8 @@
             // Hide Save button and Add Member button
             document.getElementById('save-members-button').style.display = 'none';
             document.getElementById('add-member-button').style.display = 'none';
-            // Show Edit Team Members button in header
-            document.getElementById('edit-members-button-header').style.display = 'inline-block';
+            // Show Edit Team Members button
+            document.getElementById('edit-members-button').style.display = 'inline-block';
         }
 
         // Function to unlock team members inputs for editing
@@ -350,13 +371,18 @@
             document.getElementById('save-members-button').style.display = 'inline-block';
             document.getElementById('add-member-button').style.display = 'inline-block';
             // Hide Edit Team Members button in header
-            document.getElementById('edit-members-button-header').style.display = 'none';
+            document.getElementById('edit-members-button').style.display = 'none';
+            document.getElementById('members-section').classList.remove('collapsed'); // Open team members section
+            const headerEditButton = document.getElementById('edit-members-button-header');
+            if(headerEditButton) {
+               headerEditButton.style.display = 'none';
+            }
         }
 
         // Function to load team name and team members from localStorage
         function loadData() {
             const savedTeamName = localStorage.getItem('teamName');
-            if (savedTeamName) {
+             if (savedTeamName) {
                 document.getElementById('display-team-name').textContent = savedTeamName;
                 document.getElementById('team-header').style.display = 'flex';
                 document.getElementById('members-section').style.display = 'block';
@@ -367,10 +393,10 @@
             }
         }
 
-        // Function to load team members from localStorage
+         // Function to load team members from localStorage
         function loadTeamMembers() {
-            const savedMembers = localStorage.getItem('teamMembers');
-            if (savedMembers) {
+             const savedMembers = localStorage.getItem('teamMembers');
+             if (savedMembers) {
                 const members = JSON.parse(savedMembers);
                 for (let member of members) {
                     addMemberRow(member.name, member.capacity);
@@ -381,23 +407,24 @@
             }
         }
 
-        // Function to load User Stories Section
+          // Function to load User Stories Section
         function loadUserStoriesSection() {
             const savedMembers = localStorage.getItem('teamMembers');
             const storiesSection = document.getElementById('stories-section');
             if (savedMembers) {
                 const members = JSON.parse(savedMembers);
-                if (members.length > 0) {
+                 if (members.length > 0) {
                     storiesSection.style.display = 'block';
                     populateAssigneeDropdown();
                     loadUserStories();
                 } else {
                     storiesSection.style.display = 'none';
-                }
+                 }
             } else {
-                storiesSection.style.display = 'none';
+                 storiesSection.style.display = 'none';
             }
         }
+
 
         // Function to populate the Assign To dropdown
         function populateAssigneeDropdown() {
@@ -415,29 +442,29 @@
             }
         }
 
-        // Function to add a user story
+         // Function to add a user story
         function addUserStory() {
             const titleInput = document.getElementById('story-title');
             const descriptionInput = document.getElementById('story-description');
             const pointsInput = document.getElementById('story-points');
             const assigneeSelect = document.getElementById('story-assignee');
 
-            const title = titleInput.value.trim();
+             const title = titleInput.value.trim();
             const description = descriptionInput.value.trim();
             const points = pointsInput.value.trim();
             const assignee = assigneeSelect.value;
 
             if (title === "" || description === "" || points === "") {
-                alert("Please fill in all fields for the user story.");
+                 alert("Please fill in all fields for the user story.");
                 return;
             }
 
             if (isNaN(points) || Number(points) <= 0) {
-                alert("Story points must be a positive number.");
+                 alert("Story points must be a positive number.");
                 return;
             }
 
-            const newStory = {
+             const newStory = {
                 id: Date.now(), // Unique identifier
                 title,
                 description,
@@ -445,7 +472,7 @@
                 assignee
             };
 
-            let stories = [];
+             let stories = [];
             const savedStories = localStorage.getItem('userStories');
             if (savedStories) {
                 stories = JSON.parse(savedStories);
@@ -464,11 +491,11 @@
 
         // Function to display user stories
         function displayUserStories() {
-            const storiesList = document.getElementById('stories-list');
+             const storiesList = document.getElementById('stories-list');
             storiesList.innerHTML = ''; // Clear existing stories
 
             const savedStories = localStorage.getItem('userStories');
-            if (savedStories) {
+             if (savedStories) {
                 const stories = JSON.parse(savedStories);
                 if (stories.length === 0) {
                     storiesList.innerHTML = '<p>No user stories added yet.</p>';
@@ -487,25 +514,25 @@
                 // Display stories under each assignee
                 for (let assignee in storiesByAssignee) {
                     const assigneeDiv = document.createElement('div');
-                    assigneeDiv.innerHTML = `<h3>${assignee}</h3>`;
+                     assigneeDiv.innerHTML = `<h3>${assignee}</h3>`;
 
-                    storiesByAssignee[assignee].forEach(story => {
-                        const storyDiv = document.createElement('div');
+                     storiesByAssignee[assignee].forEach(story => {
+                         const storyDiv = document.createElement('div');
                         storyDiv.className = 'story';
-                        storyDiv.innerHTML = `
+                         storyDiv.innerHTML = `
                             <div class="story-header">
-                                <p class="story-title">${story.title} (${story.points} pts)</p>
+                                 <p class="story-title">${story.title} (${story.points} pts)</p>
                                 <div class="story-actions">
-                                    <button onclick="editUserStory(${story.id})">Edit</button>
+                                     <button onclick="editUserStory(${story.id})">Edit</button>
                                     <button class="delete-story" onclick="deleteUserStory(${story.id})">Delete</button>
                                 </div>
                             </div>
-                            <p>${story.description}</p>
-                        `;
+                             <p>${story.description}</p>
+                         `;
                         assigneeDiv.appendChild(storyDiv);
-                    });
+                     });
 
-                    storiesList.appendChild(assigneeDiv);
+                     storiesList.appendChild(assigneeDiv);
                 }
             } else {
                 storiesList.innerHTML = '<p>No user stories added yet.</p>';
@@ -519,10 +546,10 @@
 
         // Function to edit a user story
         function editUserStory(storyId) {
-            const savedStories = localStorage.getItem('userStories');
+             const savedStories = localStorage.getItem('userStories');
             if (!savedStories) return;
             let stories = JSON.parse(savedStories);
-            const story = stories.find(s => s.id === storyId);
+             const story = stories.find(s => s.id === storyId);
             if (!story) return;
 
             // Populate the form with existing data
@@ -531,15 +558,15 @@
             document.getElementById('story-points').value = story.points;
             document.getElementById('story-assignee').value = story.assignee;
 
-            // Change the Add button to Update button
+             // Change the Add button to Update button
             const addButton = document.querySelector('#add-story-form button');
             addButton.textContent = 'Update User Story';
             addButton.onclick = function() { updateUserStory(storyId); };
         }
 
-        // Function to update a user story
+         // Function to update a user story
         function updateUserStory(storyId) {
-            const titleInput = document.getElementById('story-title');
+             const titleInput = document.getElementById('story-title');
             const descriptionInput = document.getElementById('story-description');
             const pointsInput = document.getElementById('story-points');
             const assigneeSelect = document.getElementById('story-assignee');
@@ -550,18 +577,18 @@
             const assignee = assigneeSelect.value;
 
             if (title === "" || description === "" || points === "") {
-                alert("Please fill in all fields for the user story.");
-                return;
+                 alert("Please fill in all fields for the user story.");
+                 return;
             }
 
-            if (isNaN(points) || Number(points) <= 0) {
-                alert("Story points must be a positive number.");
+             if (isNaN(points) || Number(points) <= 0) {
+                 alert("Story points must be a positive number.");
                 return;
             }
 
             let stories = [];
             const savedStories = localStorage.getItem('userStories');
-            if (savedStories) {
+             if (savedStories) {
                 stories = JSON.parse(savedStories);
             }
 
@@ -577,9 +604,9 @@
             };
 
             localStorage.setItem('userStories', JSON.stringify(stories));
-            alert("User story updated!");
+             alert("User story updated!");
 
-            // Reset the form
+             // Reset the form
             titleInput.value = '';
             descriptionInput.value = '';
             pointsInput.value = '';
@@ -591,7 +618,7 @@
             displayUserStories();
         }
 
-        // Function to delete a user story
+         // Function to delete a user story
         function deleteUserStory(storyId) {
             if (!confirm("Are you sure you want to delete this user story?")) return;
 
@@ -601,29 +628,30 @@
                 stories = JSON.parse(savedStories);
             }
 
-            stories = stories.filter(s => s.id !== storyId);
+             stories = stories.filter(s => s.id !== storyId);
             localStorage.setItem('userStories', JSON.stringify(stories));
-            alert("User story deleted!");
+             alert("User story deleted!");
             displayUserStories();
         }
 
-        // Function to load User Stories Section
-        function loadUserStoriesSection() {
-            const savedMembers = localStorage.getItem('teamMembers');
-            const storiesSection = document.getElementById('stories-section');
-            if (savedMembers) {
+         // Function to load User Stories Section
+         function loadUserStoriesSection() {
+             const savedMembers = localStorage.getItem('teamMembers');
+             const storiesSection = document.getElementById('stories-section');
+             if (savedMembers) {
                 const members = JSON.parse(savedMembers);
                 if (members.length > 0) {
                     storiesSection.style.display = 'block';
                     populateAssigneeDropdown();
                     loadUserStories();
                 } else {
-                    storiesSection.style.display = 'none';
+                     storiesSection.style.display = 'none';
                 }
-            } else {
-                storiesSection.style.display = 'none';
+             } else {
+                 storiesSection.style.display = 'none';
             }
         }
+
 
         // Initialize the page by loading existing data if any
         window.onload = loadData;
