@@ -12,6 +12,18 @@
             font-size: 24px;
             font-weight: bold;
             margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        header div {
+            display: flex;
+            align-items: center;
+        }
+        header input[type="text"] {
+            padding: 5px;
+            font-size: 18px;
+            margin-right: 10px;
         }
         .section {
             margin-bottom: 30px;
@@ -60,13 +72,39 @@
         .save-team:hover {
             background-color: #138496;
         }
+        .edit-button {
+            background-color: #ffc107;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            color: white;
+            margin-left: 10px;
+        }
+        .edit-button:hover {
+            background-color: #e0a800;
+        }
     </style>
 </head>
 <body>
 
-    <header>Steve</header>
+    <header>
+        <div id="team-header">
+            <span id="display-team-name">Steve</span>
+            <button class="edit-button" id="edit-team-button" onclick="enableEditTeamName()">Edit</button>
+        </div>
+    </header>
 
-    <div class="section" id="team-section">
+    <!-- Team Name Edit Section (Hidden by Default) -->
+    <div class="section" id="edit-team-section" style="display:none;">
+        <label for="edit-team-name">Edit Team's Name:</label>
+        <input type="text" id="edit-team-name" placeholder="Team Name">
+        <br>
+        <button class="save-team" onclick="saveEditedTeamName()">Save Team Name</button>
+    </div>
+
+    <!-- Team Name Input Section (Visible if No Team Name is Saved) -->
+    <div class="section" id="team-section" style="display:none;">
         <label for="team-name">Enter Your Team's Name:</label>
         <input type="text" id="team-name" placeholder="Team Name">
         <br>
@@ -84,7 +122,7 @@
     </div>
 
     <script>
-        // Function to save the team name
+        // Function to save the team name initially
         function saveTeamName() {
             const teamNameInput = document.getElementById('team-name');
             const teamName = teamNameInput.value.trim();
@@ -96,7 +134,34 @@
             alert("Team name saved!");
             document.getElementById('team-section').style.display = 'none';
             document.getElementById('members-section').style.display = 'block';
+            document.getElementById('display-team-name').textContent = teamName;
             loadTeamMembers();
+        }
+
+        // Function to enable editing the team name
+        function enableEditTeamName() {
+            const teamHeader = document.getElementById('team-header');
+            const editSection = document.getElementById('edit-team-section');
+            const displayName = document.getElementById('display-team-name').textContent;
+            document.getElementById('edit-team-name').value = displayName;
+
+            teamHeader.style.display = 'none';
+            editSection.style.display = 'block';
+        }
+
+        // Function to save the edited team name
+        function saveEditedTeamName() {
+            const editTeamNameInput = document.getElementById('edit-team-name');
+            const newTeamName = editTeamNameInput.value.trim();
+            if (newTeamName === "") {
+                alert("Team name cannot be empty.");
+                return;
+            }
+            localStorage.setItem('teamName', newTeamName);
+            alert("Team name updated!");
+            document.getElementById('display-team-name').textContent = newTeamName;
+            document.getElementById('team-header').style.display = 'flex';
+            document.getElementById('edit-team-section').style.display = 'none';
         }
 
         // Function to add a new team member row
@@ -161,9 +226,12 @@
         function loadData() {
             const savedTeamName = localStorage.getItem('teamName');
             if (savedTeamName) {
-                document.getElementById('team-section').style.display = 'none';
+                document.getElementById('display-team-name').textContent = savedTeamName;
+                document.getElementById('team-header').style.display = 'flex';
                 document.getElementById('members-section').style.display = 'block';
                 loadTeamMembers();
+            } else {
+                document.getElementById('team-section').style.display = 'block';
             }
         }
 
