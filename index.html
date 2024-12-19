@@ -156,6 +156,30 @@
             align-items: center;
             cursor: pointer;
         }
+
+        /* Heatmap Styles */
+        #heatmap-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        #heatmap-table th, #heatmap-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        #heatmap-table th {
+            background-color: #f2f2f2;
+        }
+        .at-capacity {
+            background-color: #aaffaa; /* Green */
+        }
+        .above-capacity {
+            background-color: #ffaaaa; /* Red */
+        }
+        .below-capacity {
+             background-color: #aaaaff; /* Blue */
+        }
     </style>
 </head>
 <body>
@@ -239,6 +263,13 @@
         <button class="save-team" onclick="saveTeamMembers()">Save Team Members</button>
     </div>
 
+    <!-- Heatmap Section -->
+    <div class="section" id="heatmap-section" style="display:none;">
+         <h2>Team Capacity Heatmap</h2>
+        <div id="heatmap-container">
+             <!-- Heatmap table will be displayed here -->
+        </div>
+    </div>
     <script>
 
          // Function to toggle a section's collapsed state
@@ -487,6 +518,7 @@
             pointsInput.value = '';
 
             displayUserStories();
+             updateHeatmap();
         }
 
         // Function to display user stories
@@ -542,6 +574,7 @@
         // Function to load user stories
         function loadUserStories() {
             displayUserStories();
+             updateHeatmap();
         }
 
         // Function to edit a user story
@@ -616,6 +649,7 @@
             addButton.onclick = addUserStory;
 
             displayUserStories();
+            updateHeatmap();
         }
 
          // Function to delete a user story
@@ -632,25 +666,107 @@
             localStorage.setItem('userStories', JSON.stringify(stories));
              alert("User story deleted!");
             displayUserStories();
+             updateHeatmap();
         }
 
          // Function to load User Stories Section
          function loadUserStoriesSection() {
              const savedMembers = localStorage.getItem('teamMembers');
              const storiesSection = document.getElementById('stories-section');
+            const heatmapSection = document.getElementById('heatmap-section');
              if (savedMembers) {
                 const members = JSON.parse(savedMembers);
                 if (members.length > 0) {
                     storiesSection.style.display = 'block';
+                     heatmapSection.style.display = 'block';
                     populateAssigneeDropdown();
                     loadUserStories();
                 } else {
-                     storiesSection.style.display = 'none';
+                    storiesSection.style.display = 'none';
+                    heatmapSection.style.display = 'none';
                 }
-             } else {
+            } else {
                  storiesSection.style.display = 'none';
+                 heatmapSection.style.display = 'none';
+             }
+         }
+
+         // Function to update the heatmap
+        function updateHeatmap() {
+            const heatmapContainer = document.getElementById('heatmap-container');
+            heatmapContainer.innerHTML = ''; // Clear existing table
+
+             const savedMembers = localStorage.getItem('teamMembers');
+            const savedStories = localStorage.getItem('userStories');
+
+            if (!savedMembers || !savedStories) {
+                heatmapContainer.innerHTML = '<p>Add team members and user stories to see the heatmap.</p>';
+                return;
             }
-        }
+
+             const members = JSON.parse(savedMembers);
+            const stories = JSON.parse(savedStories);
+
+            if (members.length === 0) {
+                 heatmapContainer.innerHTML = '<p>Add team members to see the heatmap.</p>';
+                return;
+             }
+
+             if (stories.length === 0) {
+                heatmapContainer.innerHTML = '<p>Add user stories to see the heatmap.</p>';
+                return;
+            }
+
+            const heatmapTable = document.createElement('table');
+            heatmapTable.id = 'heatmap-table';
+
+            // Create table header
+            const headerRow = document.createElement('tr');
+            members.forEach(member => {
+                const th = document.createElement('th');
+                th.textContent = member.name;
+                headerRow.appendChild(th);
+            });
+            heatmapTable.appendChild(headerRow);
+
+
+            // Calculate capacities
+            const capacities = {};
+            members.forEach(member => {
+                capacities[member.name] = Number(member.capacity);
+            });
+
+            // Calculate story points per member
+            const memberStoryPoints = {};
+            stories.forEach(story => {
+               if(!memberStoryPoints[story.assignee]) {
+                    memberStoryPoints[story.assignee] = 0;
+                }
+                memberStoryPoints[story.assignee] += story.points;
+            });
+
+            // Create table data rows for capacity status
+            const statusRow = document.createElement('tr');
+            members.forEach(member => {
+                const td = document.createElement('td');
+                let memberPoints = memberStoryPoints[member.name] || 0;
+                let capacityStatus = '';
+                if(memberPoints === capacities[member.name]) {
+                   capacityStatus = "at capacity";
+                   td.classList.add('at-capacity')
+               } else if (memberPoints > capacities[member.name]) {
+                  capacityStatus = "above capacity";
+                   td.classList.add('above-capacity');
+               } else {
+                   capacityStatus = "below capacity";
+                    td.classList.add('below-capacity')
+               }
+                td.textContent = capacityStatus
+               statusRow.appendChild(td)
+            });
+            heatmapTable.appendChild(statusRow);
+            heatmapContainer.appendChild(heatmapTable);
+         }
 
 
         // Initialize the page by loading existing data if any
