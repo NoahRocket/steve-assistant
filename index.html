@@ -7,6 +7,7 @@
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
+            background-color: #f9f9f9;
         }
         header {
             font-size: 24px;
@@ -27,22 +28,33 @@
         }
         .section {
             margin-bottom: 30px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
         label {
             display: block;
             margin-bottom: 5px;
             font-weight: bold;
         }
-        input[type="text"], input[type="number"] {
+        input[type="text"], input[type="number"], select, textarea {
             padding: 8px;
-            width: 300px;
+            width: 100%;
+            max-width: 500px;
             margin-bottom: 10px;
             border: 1px solid #ccc;
             border-radius: 4px;
+            box-sizing: border-box;
+        }
+        textarea {
+            resize: vertical;
+            height: 80px;
         }
         button {
             padding: 8px 12px;
             margin-top: 10px;
+            margin-right: 10px;
             background-color: #28a745;
             color: white;
             border: none;
@@ -56,9 +68,11 @@
             display: flex;
             align-items: center;
             margin-bottom: 10px;
+            flex-wrap: wrap;
         }
         .team-member input {
             margin-right: 10px;
+            margin-bottom: 5px;
         }
         .add-member {
             background-color: #007bff;
@@ -91,14 +105,46 @@
             border-radius: 4px;
             color: white;
             cursor: pointer;
+            margin-left: 10px;
         }
         .remove-button:hover {
             background-color: #c82333;
         }
         /* Disabled input styles */
-        input[disabled] {
+        input[disabled], textarea[disabled], select[disabled] {
             background-color: #f5f5f5;
             cursor: not-allowed;
+        }
+        /* User Stories Styles */
+        .story {
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            background-color: #fefefe;
+        }
+        .story-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .story-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 0;
+        }
+        .story-actions button {
+            background-color: #007bff;
+            margin-left: 5px;
+        }
+        .story-actions button:hover {
+            background-color: #0069d9;
+        }
+        .story-actions .delete-story {
+            background-color: #dc3545;
+        }
+        .story-actions .delete-story:hover {
+            background-color: #c82333;
         }
     </style>
 </head>
@@ -127,6 +173,7 @@
         <button class="save-team" onclick="saveTeamName()">Save Team Name</button>
     </div>
 
+    <!-- Team Members Section -->
     <div class="section" id="members-section" style="display:none;">
         <h2>Team Members</h2>
         <div id="members-list">
@@ -136,6 +183,34 @@
         <br>
         <button class="save-team" id="save-members-button" onclick="saveTeamMembers()">Save Team Members</button>
         <button class="edit-button" id="edit-members-button" onclick="enableEditTeamMembers()" style="display:none;">Edit Team Members</button>
+    </div>
+
+    <!-- User Stories Section -->
+    <div class="section" id="stories-section" style="display:none;">
+        <h2>User Stories</h2>
+        <!-- Add User Story Form -->
+        <div id="add-story-form">
+            <label for="story-title">Title:</label>
+            <input type="text" id="story-title" placeholder="Story Title">
+            
+            <label for="story-description">Description:</label>
+            <textarea id="story-description" placeholder="Story Description"></textarea>
+            
+            <label for="story-points">Story Points:</label>
+            <input type="number" id="story-points" placeholder="Story Points" min="1">
+            
+            <label for="story-assignee">Assign To:</label>
+            <select id="story-assignee">
+                <!-- Team members will be populated here -->
+            </select>
+            <br>
+            <button class="save-team" onclick="addUserStory()">Add User Story</button>
+        </div>
+        <hr>
+        <!-- Display User Stories -->
+        <div id="stories-list">
+            <!-- User stories will be displayed here -->
+        </div>
     </div>
 
     <!-- Team Members Edit Section (Hidden by Default) -->
@@ -164,6 +239,7 @@
             document.getElementById('members-section').style.display = 'block';
             document.getElementById('display-team-name').textContent = teamName;
             loadTeamMembers();
+            loadUserStoriesSection();
         }
 
         // Function to enable editing the team name
@@ -190,6 +266,7 @@
             document.getElementById('display-team-name').textContent = newTeamName;
             document.getElementById('team-header').style.display = 'flex';
             document.getElementById('edit-team-section').style.display = 'none';
+            loadUserStoriesSection();
         }
 
         // Function to add a new team member row
@@ -208,6 +285,7 @@
             capacityInput.type = 'number';
             capacityInput.placeholder = 'Capacity';
             capacityInput.value = capacity;
+            capacityInput.min = "1";
 
             const removeButton = document.createElement('button');
             removeButton.textContent = 'Remove';
@@ -243,6 +321,7 @@
             localStorage.setItem('teamMembers', JSON.stringify(members));
             alert("Team members saved!");
             lockTeamMembersInputs();
+            loadUserStoriesSection();
         }
 
         // Function to lock team members inputs after saving
@@ -281,6 +360,7 @@
                 document.getElementById('team-header').style.display = 'flex';
                 document.getElementById('members-section').style.display = 'block';
                 loadTeamMembers();
+                loadUserStoriesSection();
             } else {
                 document.getElementById('team-section').style.display = 'block';
             }
@@ -299,6 +379,235 @@
                 addMemberRow(); // Add an empty row by default
             }
         }
+
+        // Function to load User Stories Section
+        function loadUserStoriesSection() {
+            const savedMembers = localStorage.getItem('teamMembers');
+            const storiesSection = document.getElementById('stories-section');
+            if (savedMembers) {
+                const members = JSON.parse(savedMembers);
+                if (members.length > 0) {
+                    storiesSection.style.display = 'block';
+                    populateAssigneeDropdown();
+                    loadUserStories();
+                } else {
+                    storiesSection.style.display = 'none';
+                }
+            } else {
+                storiesSection.style.display = 'none';
+            }
+        }
+
+        // Function to populate the Assign To dropdown
+        function populateAssigneeDropdown() {
+            const assigneeSelect = document.getElementById('story-assignee');
+            assigneeSelect.innerHTML = ''; // Clear existing options
+            const savedMembers = localStorage.getItem('teamMembers');
+            if (savedMembers) {
+                const members = JSON.parse(savedMembers);
+                members.forEach(member => {
+                    const option = document.createElement('option');
+                    option.value = member.name;
+                    option.textContent = member.name;
+                    assigneeSelect.appendChild(option);
+                });
+            }
+        }
+
+        // Function to add a user story
+        function addUserStory() {
+            const titleInput = document.getElementById('story-title');
+            const descriptionInput = document.getElementById('story-description');
+            const pointsInput = document.getElementById('story-points');
+            const assigneeSelect = document.getElementById('story-assignee');
+
+            const title = titleInput.value.trim();
+            const description = descriptionInput.value.trim();
+            const points = pointsInput.value.trim();
+            const assignee = assigneeSelect.value;
+
+            if (title === "" || description === "" || points === "") {
+                alert("Please fill in all fields for the user story.");
+                return;
+            }
+
+            if (isNaN(points) || Number(points) <= 0) {
+                alert("Story points must be a positive number.");
+                return;
+            }
+
+            const newStory = {
+                id: Date.now(),
+                title,
+                description,
+                points: Number(points),
+                assignee
+            };
+
+            let stories = [];
+            const savedStories = localStorage.getItem('userStories');
+            if (savedStories) {
+                stories = JSON.parse(savedStories);
+            }
+            stories.push(newStory);
+            localStorage.setItem('userStories', JSON.stringify(stories));
+            alert("User story added!");
+
+            // Clear the form
+            titleInput.value = '';
+            descriptionInput.value = '';
+            pointsInput.value = '';
+
+            displayUserStories();
+        }
+
+        // Function to display user stories
+        function displayUserStories() {
+            const storiesList = document.getElementById('stories-list');
+            storiesList.innerHTML = ''; // Clear existing stories
+
+            const savedStories = localStorage.getItem('userStories');
+            if (savedStories) {
+                const stories = JSON.parse(savedStories);
+                if (stories.length === 0) {
+                    storiesList.innerHTML = '<p>No user stories added yet.</p>';
+                    return;
+                }
+
+                // Group stories by assignee
+                const storiesByAssignee = {};
+                stories.forEach(story => {
+                    if (!storiesByAssignee[story.assignee]) {
+                        storiesByAssignee[story.assignee] = [];
+                    }
+                    storiesByAssignee[story.assignee].push(story);
+                });
+
+                // Display stories under each assignee
+                for (let assignee in storiesByAssignee) {
+                    const assigneeDiv = document.createElement('div');
+                    assigneeDiv.innerHTML = `<h3>${assignee}</h3>`;
+
+                    storiesByAssignee[assignee].forEach(story => {
+                        const storyDiv = document.createElement('div');
+                        storyDiv.className = 'story';
+                        storyDiv.innerHTML = `
+                            <div class="story-header">
+                                <p class="story-title">${story.title} (${story.points} pts)</p>
+                                <div class="story-actions">
+                                    <button onclick="editUserStory(${story.id})">Edit</button>
+                                    <button class="delete-story" onclick="deleteUserStory(${story.id})">Delete</button>
+                                </div>
+                            </div>
+                            <p>${story.description}</p>
+                        `;
+                        assigneeDiv.appendChild(storyDiv);
+                    });
+
+                    storiesList.appendChild(assigneeDiv);
+                }
+            } else {
+                storiesList.innerHTML = '<p>No user stories added yet.</p>';
+            }
+        }
+
+        // Function to load user stories
+        function loadUserStories() {
+            displayUserStories();
+        }
+
+        // Function to edit a user story
+        function editUserStory(storyId) {
+            const savedStories = localStorage.getItem('userStories');
+            if (!savedStories) return;
+            let stories = JSON.parse(savedStories);
+            const story = stories.find(s => s.id === storyId);
+            if (!story) return;
+
+            // Populate the form with existing data
+            document.getElementById('story-title').value = story.title;
+            document.getElementById('story-description').value = story.description;
+            document.getElementById('story-points').value = story.points;
+            document.getElementById('story-assignee').value = story.assignee;
+
+            // Change the Add button to Update button
+            const addButton = document.querySelector('#add-story-form button');
+            addButton.textContent = 'Update User Story';
+            addButton.onclick = function() { updateUserStory(storyId); };
+        }
+
+        // Function to update a user story
+        function updateUserStory(storyId) {
+            const titleInput = document.getElementById('story-title');
+            const descriptionInput = document.getElementById('story-description');
+            const pointsInput = document.getElementById('story-points');
+            const assigneeSelect = document.getElementById('story-assignee');
+
+            const title = titleInput.value.trim();
+            const description = descriptionInput.value.trim();
+            const points = pointsInput.value.trim();
+            const assignee = assigneeSelect.value;
+
+            if (title === "" || description === "" || points === "") {
+                alert("Please fill in all fields for the user story.");
+                return;
+            }
+
+            if (isNaN(points) || Number(points) <= 0) {
+                alert("Story points must be a positive number.");
+                return;
+            }
+
+            let stories = [];
+            const savedStories = localStorage.getItem('userStories');
+            if (savedStories) {
+                stories = JSON.parse(savedStories);
+            }
+
+            const storyIndex = stories.findIndex(s => s.id === storyId);
+            if (storyIndex === -1) return;
+
+            stories[storyIndex] = {
+                id: storyId,
+                title,
+                description,
+                points: Number(points),
+                assignee
+            };
+
+            localStorage.setItem('userStories', JSON.stringify(stories));
+            alert("User story updated!");
+
+            // Reset the form
+            titleInput.value = '';
+            descriptionInput.value = '';
+            pointsInput.value = '';
+            assigneeSelect.value = '';
+            const addButton = document.querySelector('#add-story-form button');
+            addButton.textContent = 'Add User Story';
+            addButton.onclick = addUserStory;
+
+            displayUserStories();
+        }
+
+        // Function to delete a user story
+        function deleteUserStory(storyId) {
+            if (!confirm("Are you sure you want to delete this user story?")) return;
+
+            let stories = [];
+            const savedStories = localStorage.getItem('userStories');
+            if (savedStories) {
+                stories = JSON.parse(savedStories);
+            }
+
+            stories = stories.filter(s => s.id !== storyId);
+            localStorage.setItem('userStories', JSON.stringify(stories));
+            alert("User story deleted!");
+            displayUserStories();
+        }
+
+        // Function to load User Stories Section
+        // Already called in loadData and saveTeamMembers
 
         // Initialize the page by loading existing data if any
         window.onload = loadData;
