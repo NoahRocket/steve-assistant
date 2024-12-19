@@ -155,6 +155,8 @@
             <span id="display-team-name">Steve</span>
             <button class="edit-button" id="edit-team-button" onclick="enableEditTeamName()">Edit</button>
         </div>
+        <!-- Edit Team Members Button in Header -->
+        <button class="edit-button" id="edit-members-button-header" onclick="enableEditTeamMembers()" style="display:none;">Edit Team Members</button>
     </header>
 
     <!-- Team Name Edit Section (Hidden by Default) -->
@@ -182,7 +184,6 @@
         <button class="add-member" id="add-member-button" onclick="addMemberRow()">+</button>
         <br>
         <button class="save-team" id="save-members-button" onclick="saveTeamMembers()">Save Team Members</button>
-        <button class="edit-button" id="edit-members-button" onclick="enableEditTeamMembers()" style="display:none;">Edit Team Members</button>
     </div>
 
     <!-- User Stories Section -->
@@ -334,8 +335,8 @@
             // Hide Save button and Add Member button
             document.getElementById('save-members-button').style.display = 'none';
             document.getElementById('add-member-button').style.display = 'none';
-            // Show Edit Team Members button
-            document.getElementById('edit-members-button').style.display = 'inline-block';
+            // Show Edit Team Members button in header
+            document.getElementById('edit-members-button-header').style.display = 'inline-block';
         }
 
         // Function to unlock team members inputs for editing
@@ -348,8 +349,8 @@
             // Show Save button and Add Member button
             document.getElementById('save-members-button').style.display = 'inline-block';
             document.getElementById('add-member-button').style.display = 'inline-block';
-            // Hide Edit Team Members button
-            document.getElementById('edit-members-button').style.display = 'none';
+            // Hide Edit Team Members button in header
+            document.getElementById('edit-members-button-header').style.display = 'none';
         }
 
         // Function to load team name and team members from localStorage
@@ -437,7 +438,7 @@
             }
 
             const newStory = {
-                id: Date.now(),
+                id: Date.now(), // Unique identifier
                 title,
                 description,
                 points: Number(points),
@@ -607,7 +608,22 @@
         }
 
         // Function to load User Stories Section
-        // Already called in loadData and saveTeamMembers
+        function loadUserStoriesSection() {
+            const savedMembers = localStorage.getItem('teamMembers');
+            const storiesSection = document.getElementById('stories-section');
+            if (savedMembers) {
+                const members = JSON.parse(savedMembers);
+                if (members.length > 0) {
+                    storiesSection.style.display = 'block';
+                    populateAssigneeDropdown();
+                    loadUserStories();
+                } else {
+                    storiesSection.style.display = 'none';
+                }
+            } else {
+                storiesSection.style.display = 'none';
+            }
+        }
 
         // Initialize the page by loading existing data if any
         window.onload = loadData;
