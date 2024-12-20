@@ -137,7 +137,7 @@ function buildSprintGoalContext(stories) {
     stories.forEach(story => {
         context += `- ${story.title} (${story.points} pts): ${story.description}\n`;
     });
-    context += "\nPlease provide a single, cohesive sprint goal that aligns with these stories. Examples for context: Reduce bugs by 50%; Implement the Diff Viewer functionality for Editor; Increase test coverage to 80%";
+    context += "\nPlease provide a single, cohesive sprint goal that aligns with these stories. Examples for context: Reduce bugs by 50%; Implement the Diff Viewer functionality for Editor; Increase test coverage to 80%. You don't need to provide an explanation how you came up with the Sprint Goal, simply spell it out.";
     return context;
 }
 
