@@ -20,7 +20,7 @@ exports.handler = async (event, context) => {
       };
     }
 
-    const XAI_API_ENDPOINT = "https://api.xai.example.com/generate"; // Replace with your actual endpoint
+    const XAI_API_ENDPOINT = "https://api.x.ai/v1/chat/completions"; // Replace with your actual endpoint
     const apiKey = process.env.XAI_API_KEY;
     if (!apiKey) {
       console.error('XAI_API_KEY not set in environment variables.');
