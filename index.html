@@ -790,37 +790,29 @@
     }
 
     async function callXaiApi(prompt, userRequest) {
-        const outputDiv = document.getElementById('llm-output');
-        outputDiv.textContent = "Generating... Please wait.";
+    const outputDiv = document.getElementById('llm-output');
+    outputDiv.textContent = "Generating... Please wait.";
 
-        try {
-            const response = await fetch(XAI_API_ENDPOINT, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    // TODO: Insert authorization header if required by your xAI API:
-                    // e.g. 'Authorization': `Bearer ${XAI_API_KEY}`
-                },
-                body: JSON.stringify({
-                    prompt: userRequest + "\n" + prompt,
-                    // Additional parameters as required by your API
-                })
-            });
+    try {
+        const response = await fetch('/.netlify/functions/xaiProxy', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ prompt, userRequest })
+        });
 
-            if (!response.ok) {
-                throw new Error(`API call failed with status ${response.status}`);
-            }
-
-            const data = await response.json();
-            // Assuming the LLM response is in data.result or similar
-            // Adjust based on the actual API response structure
-            outputDiv.textContent = data.result || "No response returned from API.";
-        } catch (error) {
-            console.error("Error calling xAI API:", error);
-            outputDiv.textContent = "Error generating content. Check console for details.";
+        if (!response.ok) {
+            throw new Error(`Function call failed with status ${response.status}`);
         }
-    }
 
+        const data = await response.json();
+        outputDiv.textContent = data.result || "No response returned from API.";
+    } catch (error) {
+        console.error("Error calling xaiProxy:", error);
+        outputDiv.textContent = "Error generating content. Check console for details.";
+    }
+}
     window.onload = loadData;
 </script>
 </body>
