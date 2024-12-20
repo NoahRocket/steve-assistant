@@ -1,3 +1,10 @@
+Below is the updated index.html file. The main changes from your previous version are:
+	1.	Removed prompt-building functions (buildSprintGoalPrompt, buildWorkSummaryPrompt, buildSprintReviewPrompt) because the serverless function now generates prompts internally based on action, stories, and teamMembers.
+	2.	Updated the generateSprintGoal, generateWorkSummary, and generateSprintReview functions to fetch stories and teamMembers from localStorage and call callXaiApi(action, stories, teamMembers) accordingly.
+	3.	Updated the callXaiApi function to send the data in the format the xaiProxy.js expects ({ action, stories, teamMembers }) instead of prompt and userRequest.
+
+Make sure you have set XAI_API_KEY in your Netlify environment variables and that your xaiProxy.js matches the logic we discussed.
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -725,69 +732,37 @@
     document.getElementById('generate-sprint-review').addEventListener('click', generateSprintReview);
 
     async function generateSprintGoal() {
-        const prompt = buildSprintGoalPrompt();
-        await callXaiApi(prompt, "Generate a SMART Sprint Goal:");
+        const stories = JSON.parse(localStorage.getItem('userStories') || '[]');
+        await callXaiApi('sprintGoal', stories);
     }
 
     async function generateWorkSummary() {
-        const prompt = buildWorkSummaryPrompt();
-        await callXaiApi(prompt, "Generate a Work Summary:");
+        const stories = JSON.parse(localStorage.getItem('userStories') || '[]');
+        const teamMembers = JSON.parse(localStorage.getItem('teamMembers') || '[]');
+        await callXaiApi('workSummary', stories, teamMembers);
     }
 
     async function generateSprintReview() {
-        const prompt = buildSprintReviewPrompt();
-        await callXaiApi(prompt, "Generate a 2-min Sprint Review (bullet points):");
-    }
-
-    function buildSprintGoalPrompt() {
         const stories = JSON.parse(localStorage.getItem('userStories') || '[]');
-        let context = "User Stories:\n";
-        stories.forEach(story => {
-            context += `- ${story.title} (${story.points} pts): ${story.description}\n`;
-        });
-        context += "\nThe team needs a SMART sprint goal based on these stories.";
-        return context;
+        await callXaiApi('sprintReview', stories);
     }
 
-    function buildWorkSummaryPrompt() {
-        const teamMembers = JSON.parse(localStorage.getItem('teamMembers') || '[]');
-        const stories = JSON.parse(localStorage.getItem('userStories') || '[]');
-
-        let context = "Team Members and Capacities:\n";
-        teamMembers.forEach(member => {
-            context += `- ${member.name}: ${member.capacity} pts capacity\n`;
-        });
-
-        context += "\nUser Stories:\n";
-        stories.forEach(story => {
-            context += `- ${story.title} (${story.points} pts) assigned to ${story.assignee}\n`;
-        });
-
-        context += "\nPlease provide a summary of the current work situation for the team.";
-        return context;
-    }
-
-    function buildSprintReviewPrompt() {
-        const stories = JSON.parse(localStorage.getItem('userStories') || '[]');
-        let context = "User Stories completed/being worked on:\n";
-        stories.forEach(story => {
-            context += `- ${story.title}: ${story.description}\n`;
-        });
-        context += "\nGenerate a non-technical sprint review as bullet points (approx. 2 minutes).";
-        return context;
-    }
-
-    async function callXaiApi(prompt, userRequest) {
+    async function callXaiApi(action, stories, teamMembers = []) {
         const outputDiv = document.getElementById('llm-output');
         outputDiv.textContent = "Generating... Please wait.";
 
         try {
+            const body = { action, stories };
+            if (action === 'workSummary') {
+                body.teamMembers = teamMembers;
+            }
+
             const response = await fetch('/.netlify/functions/xaiProxy', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ prompt, userRequest })
+                body: JSON.stringify(body)
             });
 
             if (!response.ok) {
