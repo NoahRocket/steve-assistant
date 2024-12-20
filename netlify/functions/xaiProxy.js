@@ -1,12 +1,14 @@
-exports.handler = async (event, context) => {
-  // Now just use fetch directly:
-  const response = await fetch("https://your-xai-api-endpoint.com", {
-    method: 'POST',
-    // ...rest of your fetch code...
-  });
+// netlify/functions/xaiProxy.js
 
-  // ...rest of your code...
-}
+exports.handler = async (event, context) => {
+  try {
+    // Check if the request method is POST
+    if (event.httpMethod !== 'POST') {
+      return {
+        statusCode: 405,
+        body: 'Method Not Allowed'
+      };
+    }
 
     // Parse the request body
     const { prompt, userRequest } = JSON.parse(event.body || '{}');
@@ -18,7 +20,7 @@ exports.handler = async (event, context) => {
       };
     }
 
-    const XAI_API_ENDPOINT = "https://api.xai.example.com/generate"; // Replace with actual endpoint
+    const XAI_API_ENDPOINT = "https://api.xai.example.com/generate"; // Replace with your actual endpoint
     const apiKey = process.env.XAI_API_KEY;
     if (!apiKey) {
       console.error('XAI_API_KEY not set in environment variables.');
@@ -28,6 +30,7 @@ exports.handler = async (event, context) => {
       };
     }
 
+    // Use fetch directly, since Node 18+ runtime supports global fetch
     const response = await fetch(XAI_API_ENDPOINT, {
       method: 'POST',
       headers: {
@@ -36,7 +39,7 @@ exports.handler = async (event, context) => {
       },
       body: JSON.stringify({
         prompt: `${userRequest}\n${prompt}`
-        // Add any additional parameters required by your API here
+        // Add any additional parameters required by your API
       })
     });
 
