@@ -723,9 +723,9 @@
     // TODO: Replace the endpoint below with the actual xAI API endpoint
     // TODO: Insert your API key securely. For Netlify, you would store it as an environment variable
     // and reference it in a serverless function or during build time, rather than inline here.
-    const XAI_API_ENDPOINT = "https://api.xai.example.com/generate"; // Example placeholder
-    const XAI_API_KEY = "YOUR_XAI_API_KEY_HERE"; // Example placeholder - DO NOT HARD-CODE IN PRODUCTION
-
+    const XAI_API_ENDPOINT = "https://api.x.ai/v1/chat/completions"; // Example placeholder
+    const XAI_API_KEY = process.env.XAI_API_KEY;
+    
     document.getElementById('generate-sprint-goal').addEventListener('click', generateSprintGoal);
     document.getElementById('generate-work-summary').addEventListener('click', generateWorkSummary);
     document.getElementById('generate-sprint-review').addEventListener('click', generateSprintReview);
