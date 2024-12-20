@@ -1,16 +1,12 @@
-// netlify/functions/xaiProxy.js
-
-const fetch = require('node-fetch');
-
 exports.handler = async (event, context) => {
-  try {
-    // Check if the request method is POST
-    if (event.httpMethod !== 'POST') {
-      return {
-        statusCode: 405,
-        body: 'Method Not Allowed'
-      };
-    }
+  // Now just use fetch directly:
+  const response = await fetch("https://your-xai-api-endpoint.com", {
+    method: 'POST',
+    // ...rest of your fetch code...
+  });
+
+  // ...rest of your code...
+}
 
     // Parse the request body
     const { prompt, userRequest } = JSON.parse(event.body || '{}');
