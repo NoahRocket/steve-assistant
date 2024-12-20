@@ -1,3 +1,5 @@
+Below is the entire index.html file code again, from start to finish, incorporating all the changes. This version calls the Netlify serverless function (xaiProxy) instead of the xAI API directly, and no longer includes the API key or endpoint references in the client code.
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -432,7 +434,7 @@
             if (members.length > 0) {
                 storiesSection.style.display = 'block';
                 heatmapSection.style.display = 'block';
-                xaiSection.style.display = 'block'; // Show the new xAI Integration section
+                xaiSection.style.display = 'block';
                 populateAssigneeDropdown();
                 loadUserStories();
             } else {
@@ -720,12 +722,6 @@
     // xAI API Integration
     // -------------------
 
-    // TODO: Replace the endpoint below with the actual xAI API endpoint
-    // TODO: Insert your API key securely. For Netlify, you would store it as an environment variable
-    // and reference it in a serverless function or during build time, rather than inline here.
-    const XAI_API_ENDPOINT = "https://api.xai.example.com/generate"; // Example placeholder
-    const XAI_API_KEY = "YOUR_XAI_API_KEY_HERE"; // Example placeholder - DO NOT HARD-CODE IN PRODUCTION
-
     document.getElementById('generate-sprint-goal').addEventListener('click', generateSprintGoal);
     document.getElementById('generate-work-summary').addEventListener('click', generateWorkSummary);
     document.getElementById('generate-sprint-review').addEventListener('click', generateSprintReview);
@@ -746,19 +742,16 @@
     }
 
     function buildSprintGoalPrompt() {
-        // Gather the user stories as context
         const stories = JSON.parse(localStorage.getItem('userStories') || '[]');
         let context = "User Stories:\n";
         stories.forEach(story => {
             context += `- ${story.title} (${story.points} pts): ${story.description}\n`;
         });
         context += "\nThe team needs a SMART sprint goal based on these stories.";
-
         return context;
     }
 
     function buildWorkSummaryPrompt() {
-        // You can also gather team info and stories to summarize what the team is working on
         const teamMembers = JSON.parse(localStorage.getItem('teamMembers') || '[]');
         const stories = JSON.parse(localStorage.getItem('userStories') || '[]');
 
@@ -773,46 +766,44 @@
         });
 
         context += "\nPlease provide a summary of the current work situation for the team.";
-
         return context;
     }
 
     function buildSprintReviewPrompt() {
-        // Non-technical 2 min sprint review in bullet points
         const stories = JSON.parse(localStorage.getItem('userStories') || '[]');
         let context = "User Stories completed/being worked on:\n";
         stories.forEach(story => {
             context += `- ${story.title}: ${story.description}\n`;
         });
         context += "\nGenerate a non-technical sprint review as bullet points (approx. 2 minutes).";
-
         return context;
     }
 
     async function callXaiApi(prompt, userRequest) {
-    const outputDiv = document.getElementById('llm-output');
-    outputDiv.textContent = "Generating... Please wait.";
+        const outputDiv = document.getElementById('llm-output');
+        outputDiv.textContent = "Generating... Please wait.";
 
-    try {
-        const response = await fetch('/.netlify/functions/xaiProxy', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ prompt, userRequest })
-        });
+        try {
+            const response = await fetch('/.netlify/functions/xaiProxy', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ prompt, userRequest })
+            });
 
-        if (!response.ok) {
-            throw new Error(`Function call failed with status ${response.status}`);
+            if (!response.ok) {
+                throw new Error(`Function call failed with status ${response.status}`);
+            }
+
+            const data = await response.json();
+            outputDiv.textContent = data.result || "No response returned from API.";
+        } catch (error) {
+            console.error("Error calling xaiProxy:", error);
+            outputDiv.textContent = "Error generating content. Check console for details.";
         }
-
-        const data = await response.json();
-        outputDiv.textContent = data.result || "No response returned from API.";
-    } catch (error) {
-        console.error("Error calling xaiProxy:", error);
-        outputDiv.textContent = "Error generating content. Check console for details.";
     }
-}
+
     window.onload = loadData;
 </script>
 </body>
