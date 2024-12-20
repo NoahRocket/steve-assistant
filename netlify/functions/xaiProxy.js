@@ -1,6 +1,5 @@
 exports.handler = async (event) => {
-    // Highlight: Ensure you have set XAI_API_KEY in Netlify environment variables
-    // under "Site Settings > Build & deploy > Environment > Environment variables".
+    // Ensure XAI_API_KEY is set in Netlify environment variables
     const API_KEY = process.env.XAI_API_KEY; 
     if (!API_KEY) {
         console.error('XAI_API_KEY is not set in environment variables.');
@@ -32,7 +31,7 @@ exports.handler = async (event) => {
         };
     }
 
-    // Depending on the action, we build a different prompt
+    // Depending on the action, build a different prompt
     let userRequest, promptContext;
     switch (action) {
         case 'sprintGoal':
@@ -66,7 +65,7 @@ exports.handler = async (event) => {
             };
     }
 
-    // Construct the messages for the xAI API (adjust as needed if your API structure differs)
+    // Construct the messages for the xAI API
     const messages = [
         {
             role: 'system',
@@ -85,7 +84,7 @@ exports.handler = async (event) => {
                 'Authorization': `Bearer ${API_KEY}`,
             },
             body: JSON.stringify({
-                model: 'grok-2-1212', // If your API requires a model field, update as needed
+                model: 'grok-2-1212', // Update the model name if necessary
                 messages: messages,
                 stream: false,
                 temperature: 0.1, 
@@ -102,10 +101,24 @@ exports.handler = async (event) => {
         }
 
         const data = await response.json();
+
+        // -------------------
+        // **Fix Applied Below**
+        // -------------------
+        // Extract the assistant's message content from the xAI API response
+        let completion = "No response returned from API.";
+        if (data && data.choices && Array.isArray(data.choices) && data.choices.length > 0) {
+            if (data.choices[0].message && data.choices[0].message.content) {
+                completion = data.choices[0].message.content;
+            }
+        }
+
+        // Return the extracted content wrapped in a 'result' field
         return {
             statusCode: 200,
-            body: JSON.stringify(data),
+            body: JSON.stringify({ result: completion }),
         };
+        // -------------------
     } catch (error) {
         console.error('Error calling xAI API:', error);
         return {
@@ -115,7 +128,9 @@ exports.handler = async (event) => {
     }
 };
 
+// -------------------
 // Helper functions to build context prompts
+// -------------------
 
 function buildSprintGoalContext(stories) {
     let context = "User Stories:\n";
