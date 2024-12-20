@@ -180,6 +180,31 @@
         .below-capacity {
              background-color: #aaaaff; /* Blue */
         }
+        /* AI Action Buttons Section */
+        #ai-actions-section button {
+            margin-right: 10px;
+            margin-bottom: 10px;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            background-color: #6c757d; /* Example grey color */
+            color: white;
+            cursor: pointer;
+        }
+
+        #ai-actions-section button:hover {
+            background-color: #5a6268;
+        }
+
+        /* Output Display Area */
+        #ai-output {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+            white-space: pre-line; /* To respect line breaks in the output */
+        }
     </style>
 </head>
 <body>
@@ -211,7 +236,7 @@
 
     <!-- Team Members Section -->
     <div class="section collapsed" id="members-section" style="display:none;">
-        <h2 onclick="toggleSection('members-section')">Team Members 
+        <h2 onclick="toggleSection('members-section')">Team Members
              <button class="edit-button" id="edit-members-button" onclick="enableEditTeamMembers()" style="display:none;">Edit</button>
         </h2>
         <div class="section-content">
@@ -231,13 +256,13 @@
         <div id="add-story-form">
             <label for="story-title">Title:</label>
             <input type="text" id="story-title" placeholder="Story Title">
-            
+
             <label for="story-description">Description:</label>
             <textarea id="story-description" placeholder="Story Description"></textarea>
-            
+
             <label for="story-points">Story Points:</label>
             <input type="number" id="story-points" placeholder="Story Points" min="1">
-            
+
             <label for="story-assignee">Assign To:</label>
             <select id="story-assignee">
                 <!-- Team members will be populated here -->
@@ -270,6 +295,18 @@
              <!-- Heatmap table will be displayed here -->
         </div>
     </div>
+
+    <!-- AI Actions Section -->
+    <div class="section" id="ai-actions-section" style="display:none;">
+        <h2>AI Actions</h2>
+        <button onclick="generateSprintGoal()">Generate Sprint Goal</button>
+        <button onclick="generateWorkSummary()">Generate Work Summary</button>
+        <button onclick="generateSprintReview()">Generate Sprint Review</button>
+        <div id="ai-output">
+            <!-- AI generated content will be displayed here -->
+        </div>
+    </div>
+
     <script>
 
          // Function to toggle a section's collapsed state
@@ -277,7 +314,7 @@
             const section = document.getElementById(sectionId);
             section.classList.toggle('collapsed');
         }
-         
+
         // Function to save the team name initially
         function saveTeamName() {
             const teamNameInput = document.getElementById('team-name');
@@ -442,20 +479,23 @@
         function loadUserStoriesSection() {
             const savedMembers = localStorage.getItem('teamMembers');
             const storiesSection = document.getElementById('stories-section');
+            const aiActionsSection = document.getElementById('ai-actions-section');
             if (savedMembers) {
                 const members = JSON.parse(savedMembers);
                  if (members.length > 0) {
                     storiesSection.style.display = 'block';
+                    aiActionsSection.style.display = 'block';
                     populateAssigneeDropdown();
                     loadUserStories();
                 } else {
                     storiesSection.style.display = 'none';
+                    aiActionsSection.style.display = 'none';
                  }
             } else {
                  storiesSection.style.display = 'none';
+                 aiActionsSection.style.display = 'none';
             }
         }
-
 
         // Function to populate the Assign To dropdown
         function populateAssigneeDropdown() {
@@ -674,20 +714,24 @@
              const savedMembers = localStorage.getItem('teamMembers');
              const storiesSection = document.getElementById('stories-section');
             const heatmapSection = document.getElementById('heatmap-section');
+             const aiActionsSection = document.getElementById('ai-actions-section');
              if (savedMembers) {
                 const members = JSON.parse(savedMembers);
                 if (members.length > 0) {
                     storiesSection.style.display = 'block';
                      heatmapSection.style.display = 'block';
+                     aiActionsSection.style.display = 'block';
                     populateAssigneeDropdown();
                     loadUserStories();
                 } else {
                     storiesSection.style.display = 'none';
                     heatmapSection.style.display = 'none';
+                    aiActionsSection.style.display = 'none';
                 }
             } else {
                  storiesSection.style.display = 'none';
                  heatmapSection.style.display = 'none';
+                 aiActionsSection.style.display = 'none';
              }
          }
 
@@ -729,7 +773,6 @@
             });
             heatmapTable.appendChild(headerRow);
 
-
             // Calculate capacities
             const capacities = {};
             members.forEach(member => {
@@ -768,6 +811,100 @@
             heatmapContainer.appendChild(heatmapTable);
          }
 
+        // **AI Action Functions**
+        async function generateSprintGoal() {
+            const userStories = JSON.parse(localStorage.getItem('userStories') || '[]');
+            const teamMembers = JSON.parse(localStorage.getItem('teamMembers') || '[]');
+            const outputDiv = document.getElementById('ai-output');
+            outputDiv.textContent = 'Generating Sprint Goal...';
+
+            if (userStories.length === 0 || teamMembers.length === 0) {
+                outputDiv.textContent = 'Please add user stories and team members to generate a sprint goal.';
+                return;
+            }
+
+            const contextStories = userStories.map(story => `- ${story.title}: ${story.description} (Points: ${story.points}, Assigned to: ${story.assignee})`).join('\n');
+            const contextMembers = teamMembers.map(member => `- ${member.name} (Capacity: ${member.capacity})`).join('\n');
+
+            const prompt = `Based on the following user stories and the team members working on them, generate a common SMART sprint goal:\n\nUser Stories:\n${contextStories}\n\nTeam Members:\n${contextMembers}`;
+            const generatedText = await callxAI(prompt);
+            outputDiv.textContent = generatedText;
+        }
+
+        async function generateWorkSummary() {
+            const userStories = JSON.parse(localStorage.getItem('userStories') || '[]');
+            const teamMembers = JSON.parse(localStorage.getItem('teamMembers') || '[]');
+            const outputDiv = document.getElementById('ai-output');
+            outputDiv.textContent = 'Generating Work Summary...';
+
+            if (userStories.length === 0 || teamMembers.length === 0) {
+                outputDiv.textContent = 'Please add user stories and team members to generate a work summary.';
+                return;
+            }
+
+            const context
+            const contextStories = userStories.map(story => `- ${story.title}: ${story.description} (Points: ${story.points}, Assigned to: ${story.assignee})`).join('\n');
+            const contextMembers = teamMembers.map(member => `- ${member.name}`).join('\n');
+
+            const prompt = `Generate a summary of the work being done by the team based on the following user stories and team members:\n\nUser Stories:\n${contextStories}\n\nTeam Members:\n${contextMembers}`;
+            const generatedText = await callxAI(prompt);
+            outputDiv.textContent = generatedText;
+        }
+
+        async function generateSprintReview() {
+            const userStories = JSON.parse(localStorage.getItem('userStories') || '[]');
+            const outputDiv = document.getElementById('ai-output');
+            outputDiv.textContent = 'Generating Sprint Review...';
+
+            if (userStories.length === 0) {
+                outputDiv.textContent = 'Please add user stories to generate a sprint review.';
+                return;
+            }
+
+            const contextStories = userStories.map(story => `- ${story.title}: ${story.description}`).join('\n');
+
+            const prompt = `Generate a non-technical 2-minute sprint review using bullet points based on the following user stories (assuming they are completed):\n\nUser Stories:\n${contextStories}`;
+            const generatedText = await callxAI(prompt);
+            outputDiv.textContent = generatedText;
+        }
+
+        // **Helper function to call the xAI API**
+        async function callxAI(prompt) {
+            // **IMPORTANT:** Replace 'YOUR_XAI_API_KEY' with your actual xAI API key.
+            // For production, store this securely in an environment variable (like in Netlify settings).
+            const apiKey = process.env.XAI_API_KEY || 'YOUR_XAI_API_KEY'; // Adjust based on your Netlify setup
+            const apiUrl = 'https://api.groq.com/openai/v1/chat/completions'; // Example endpoint, adjust as needed for xAI
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${apiKey}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        model: 'mixtral-8x7b-32768', // Or the model you intend to use
+                        messages: [{
+                            role: 'user',
+                            content: prompt
+                        }]
+                    })
+                });
+
+                if (!response.ok) {
+                    const message = `API Error: ${response.status} - ${await response.text()}`;
+                    console.error(message);
+                    return message;
+                }
+
+                const data = await response.json();
+                return data.choices[0].message.content.trim();
+
+            } catch (error) {
+                console.error('Error calling xAI API:', error);
+                return `Error generating response: ${error.message}`;
+            }
+        }
 
         // Initialize the page by loading existing data if any
         window.onload = loadData;
