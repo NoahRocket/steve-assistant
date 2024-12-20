@@ -1,10 +1,3 @@
-Below is the updated index.html file. The main changes from your previous version are:
-	1.	Removed prompt-building functions (buildSprintGoalPrompt, buildWorkSummaryPrompt, buildSprintReviewPrompt) because the serverless function now generates prompts internally based on action, stories, and teamMembers.
-	2.	Updated the generateSprintGoal, generateWorkSummary, and generateSprintReview functions to fetch stories and teamMembers from localStorage and call callXaiApi(action, stories, teamMembers) accordingly.
-	3.	Updated the callXaiApi function to send the data in the format the xaiProxy.js expects ({ action, stories, teamMembers }) instead of prompt and userRequest.
-
-Make sure you have set XAI_API_KEY in your Netlify environment variables and that your xaiProxy.js matches the logic we discussed.
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
