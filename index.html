@@ -110,12 +110,10 @@
         .remove-button:hover {
             background-color: #c82333;
         }
-        /* Disabled input styles */
         input[disabled], textarea[disabled], select[disabled] {
             background-color: #f5f5f5;
             cursor: not-allowed;
         }
-        /* User Stories Styles */
         .story {
             border: 1px solid #ddd;
             padding: 15px;
@@ -146,7 +144,6 @@
         .story-actions .delete-story:hover {
             background-color: #c82333;
         }
-         /* Collapsed styles */
         .section.collapsed .section-content {
             display: none;
         }
@@ -156,7 +153,6 @@
             align-items: center;
             cursor: pointer;
         }
-
         /* Heatmap Styles */
         #heatmap-table {
             width: 100%;
@@ -178,737 +174,654 @@
             background-color: #ffaaaa; /* Red */
         }
         .below-capacity {
-             background-color: #aaaaff; /* Blue */
-        }
-        /* AI Action Buttons Section */
-        #ai-actions-section button {
-            margin-right: 10px;
-            margin-bottom: 10px;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 5px;
-            background-color: #6c757d; /* Example grey color */
-            color: white;
-            cursor: pointer;
-        }
-
-        #ai-actions-section button:hover {
-            background-color: #5a6268;
-        }
-
-        /* Output Display Area */
-        #ai-output {
-            margin-top: 20px;
-            padding: 15px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            background-color: #f8f9fa;
-            white-space: pre-line; /* To respect line breaks in the output */
+            background-color: #aaaaff; /* Blue */
         }
     </style>
 </head>
 <body>
-
-    <header>
-        <div id="team-header">
-            <span id="display-team-name">Steve</span>
-            <button class="edit-button" id="edit-team-button" onclick="enableEditTeamName()">Edit</button>
-        </div>
-        <!-- Edit Team Members Button in Header -->
-        <button class="edit-button" id="edit-members-button-header" onclick="enableEditTeamMembers()" style="display:none;">Edit Team Members</button>
-    </header>
-
-    <!-- Team Name Edit Section (Hidden by Default) -->
-    <div class="section" id="edit-team-section" style="display:none;">
-        <label for="edit-team-name">Edit Team's Name:</label>
-        <input type="text" id="edit-team-name" placeholder="Team Name">
-        <br>
-        <button class="save-team" onclick="saveEditedTeamName()">Save Team Name</button>
+<header>
+    <div id="team-header">
+        <span id="display-team-name">Steve</span>
+        <button class="edit-button" id="edit-team-button" onclick="enableEditTeamName()">Edit</button>
     </div>
+    <!-- Edit Team Members Button in Header -->
+    <button class="edit-button" id="edit-members-button-header" onclick="enableEditTeamMembers()" style="display:none;">Edit Team Members</button>
+</header>
 
-    <!-- Team Name Input Section (Visible if No Team Name is Saved) -->
-    <div class="section" id="team-section" style="display:none;">
-        <label for="team-name">Enter Your Team's Name:</label>
-        <input type="text" id="team-name" placeholder="Team Name">
-        <br>
-        <button class="save-team" onclick="saveTeamName()">Save Team Name</button>
-    </div>
+<!-- Team Name Edit Section (Hidden by Default) -->
+<div class="section" id="edit-team-section" style="display:none;">
+    <label for="edit-team-name">Edit Team's Name:</label>
+    <input type="text" id="edit-team-name" placeholder="Team Name">
+    <br>
+    <button class="save-team" onclick="saveEditedTeamName()">Save Team Name</button>
+</div>
 
-    <!-- Team Members Section -->
-    <div class="section collapsed" id="members-section" style="display:none;">
-        <h2 onclick="toggleSection('members-section')">Team Members
-             <button class="edit-button" id="edit-members-button" onclick="enableEditTeamMembers()" style="display:none;">Edit</button>
-        </h2>
-        <div class="section-content">
-             <div id="members-list">
-                 <!-- Team member rows will go here -->
-             </div>
-             <button class="add-member" id="add-member-button" onclick="addMemberRow()">+</button>
-             <br>
-             <button class="save-team" id="save-members-button" onclick="saveTeamMembers()">Save Team Members</button>
+<!-- Team Name Input Section (Visible if No Team Name is Saved) -->
+<div class="section" id="team-section" style="display:none;">
+    <label for="team-name">Enter Your Team's Name:</label>
+    <input type="text" id="team-name" placeholder="Team Name">
+    <br>
+    <button class="save-team" onclick="saveTeamName()">Save Team Name</button>
+</div>
+
+<!-- Team Members Section -->
+<div class="section collapsed" id="members-section" style="display:none;">
+    <h2 onclick="toggleSection('members-section')">Team Members 
+         <button class="edit-button" id="edit-members-button" onclick="enableEditTeamMembers()" style="display:none;">Edit</button>
+    </h2>
+    <div class="section-content">
+         <div id="members-list">
+             <!-- Team member rows will go here -->
          </div>
-    </div>
+         <button class="add-member" id="add-member-button" onclick="addMemberRow()">+</button>
+         <br>
+         <button class="save-team" id="save-members-button" onclick="saveTeamMembers()">Save Team Members</button>
+     </div>
+</div>
 
-    <!-- User Stories Section -->
-    <div class="section" id="stories-section" style="display:none;">
-        <h2>User Stories</h2>
-        <!-- Add User Story Form -->
-        <div id="add-story-form">
-            <label for="story-title">Title:</label>
-            <input type="text" id="story-title" placeholder="Story Title">
-
-            <label for="story-description">Description:</label>
-            <textarea id="story-description" placeholder="Story Description"></textarea>
-
-            <label for="story-points">Story Points:</label>
-            <input type="number" id="story-points" placeholder="Story Points" min="1">
-
-            <label for="story-assignee">Assign To:</label>
-            <select id="story-assignee">
-                <!-- Team members will be populated here -->
-            </select>
-            <br>
-            <button class="save-team" onclick="addUserStory()">Add User Story</button>
-        </div>
-        <hr>
-        <!-- Display User Stories -->
-        <div id="stories-list">
-            <!-- User stories will be displayed here -->
-        </div>
-    </div>
-
-    <!-- Team Members Edit Section (Hidden by Default) -->
-    <div class="section" id="edit-members-section" style="display:none;">
-        <h2>Edit Team Members</h2>
-        <div id="edit-members-list">
-            <!-- Editable team member rows will go here -->
-        </div>
-        <button class="add-member" id="edit-add-member-button" onclick="addMemberRow()">+</button>
+<!-- User Stories Section -->
+<div class="section" id="stories-section" style="display:none;">
+    <h2>User Stories</h2>
+    <!-- Add User Story Form -->
+    <div id="add-story-form">
+        <label for="story-title">Title:</label>
+        <input type="text" id="story-title" placeholder="Story Title">
+        
+        <label for="story-description">Description:</label>
+        <textarea id="story-description" placeholder="Story Description"></textarea>
+        
+        <label for="story-points">Story Points:</label>
+        <input type="number" id="story-points" placeholder="Story Points" min="1">
+        
+        <label for="story-assignee">Assign To:</label>
+        <select id="story-assignee">
+            <!-- Team members will be populated here -->
+        </select>
         <br>
-        <button class="save-team" onclick="saveTeamMembers()">Save Team Members</button>
+        <button class="save-team" onclick="addUserStory()">Add User Story</button>
     </div>
-
-    <!-- Heatmap Section -->
-    <div class="section" id="heatmap-section" style="display:none;">
-         <h2>Team Capacity Heatmap</h2>
-        <div id="heatmap-container">
-             <!-- Heatmap table will be displayed here -->
-        </div>
+    <hr>
+    <!-- Display User Stories -->
+    <div id="stories-list">
+        <!-- User stories will be displayed here -->
     </div>
+</div>
 
-    <!-- AI Actions Section -->
-    <div class="section" id="ai-actions-section" style="display:none;">
-        <h2>AI Actions</h2>
-        <button onclick="generateSprintGoal()">Generate Sprint Goal</button>
-        <button onclick="generateWorkSummary()">Generate Work Summary</button>
-        <button onclick="generateSprintReview()">Generate Sprint Review</button>
-        <div id="ai-output">
-            <!-- AI generated content will be displayed here -->
-        </div>
+<!-- Heatmap Section -->
+<div class="section" id="heatmap-section" style="display:none;">
+     <h2>Team Capacity Heatmap</h2>
+    <div id="heatmap-container">
+         <!-- Heatmap table will be displayed here -->
     </div>
+</div>
 
-    <script>
+<!-- xAI Integration Section -->
+<div class="section" id="xai-integration-section" style="display:none;">
+    <h2>Generate Outputs from LLM</h2>
+    <p>Use xAI LLM to generate helpful insights based on your current sprint data.</p>
+    <button id="generate-sprint-goal">Generate Sprint Goal</button>
+    <button id="generate-work-summary">Generate Work Summary</button>
+    <button id="generate-sprint-review">Generate Sprint Review</button>
+    <div id="llm-output" style="margin-top: 20px; background:#f0f0f0; padding:10px; border-radius:5px;">
+        <!-- LLM responses will appear here -->
+    </div>
+</div>
 
-         // Function to toggle a section's collapsed state
-         function toggleSection(sectionId) {
-            const section = document.getElementById(sectionId);
-            section.classList.toggle('collapsed');
+<script>
+     // Function to toggle a section's collapsed state
+     function toggleSection(sectionId) {
+        const section = document.getElementById(sectionId);
+        section.classList.toggle('collapsed');
+    }
+     
+    function saveTeamName() {
+        const teamNameInput = document.getElementById('team-name');
+        const teamName = teamNameInput.value.trim();
+        if (teamName === "") {
+            alert("Please enter a team name.");
+            return;
         }
+        localStorage.setItem('teamName', teamName);
+        alert("Team name saved!");
+        document.getElementById('team-section').style.display = 'none';
+        document.getElementById('members-section').style.display = 'block';
+        document.getElementById('display-team-name').textContent = teamName;
+        loadTeamMembers();
+        loadUserStoriesSection();
+    }
 
-        // Function to save the team name initially
-        function saveTeamName() {
-            const teamNameInput = document.getElementById('team-name');
-            const teamName = teamNameInput.value.trim();
-            if (teamName === "") {
-                alert("Please enter a team name.");
-                return;
+    function enableEditTeamName() {
+        const teamHeader = document.getElementById('team-header');
+        const editSection = document.getElementById('edit-team-section');
+        const displayName = document.getElementById('display-team-name').textContent;
+        document.getElementById('edit-team-name').value = displayName;
+
+        teamHeader.style.display = 'none';
+        editSection.style.display = 'block';
+    }
+
+    function saveEditedTeamName() {
+        const editTeamNameInput = document.getElementById('edit-team-name');
+        const newTeamName = editTeamNameInput.value.trim();
+        if (newTeamName === "") {
+            alert("Team name cannot be empty.");
+            return;
+        }
+        localStorage.setItem('teamName', newTeamName);
+        alert("Team name updated!");
+        document.getElementById('display-team-name').textContent = newTeamName;
+        document.getElementById('team-header').style.display = 'flex';
+        document.getElementById('edit-team-section').style.display = 'none';
+        loadUserStoriesSection();
+    }
+
+    function addMemberRow(name = '', capacity = '') {
+        const membersList = document.getElementById('members-list');
+
+        const memberDiv = document.createElement('div');
+        memberDiv.className = 'team-member';
+
+        const nameInput = document.createElement('input');
+        nameInput.type = 'text';
+        nameInput.placeholder = 'Member Name';
+        nameInput.value = name;
+
+        const capacityInput = document.createElement('input');
+        capacityInput.type = 'number';
+        capacityInput.placeholder = 'Capacity';
+        capacityInput.value = capacity;
+        capacityInput.min = "1";
+
+        const removeButton = document.createElement('button');
+        removeButton.textContent = 'Remove';
+        removeButton.className = 'remove-button';
+        removeButton.onclick = function() {
+            membersList.removeChild(memberDiv);
+        };
+
+        memberDiv.appendChild(nameInput);
+        memberDiv.appendChild(capacityInput);
+        memberDiv.appendChild(removeButton);
+
+        membersList.appendChild(memberDiv);
+    }
+
+    function saveTeamMembers() {
+        const membersList = document.getElementById('members-list');
+        const members = [];
+        const memberDivs = membersList.getElementsByClassName('team-member');
+        for (let div of memberDivs) {
+            const inputs = div.getElementsByTagName('input');
+            const name = inputs[0].value.trim();
+            const capacity = inputs[1].value.trim();
+            if (name !== "" && capacity !== "") {
+                members.push({ name, capacity });
             }
-            localStorage.setItem('teamName', teamName);
-            alert("Team name saved!");
-            document.getElementById('team-section').style.display = 'none';
+        }
+        if (members.length === 0) {
+            alert("Please add at least one team member with capacity.");
+            return;
+        }
+        localStorage.setItem('teamMembers', JSON.stringify(members));
+        alert("Team members saved!");
+        lockTeamMembersInputs();
+        loadUserStoriesSection();
+    }
+
+    function lockTeamMembersInputs() {
+        const membersList = document.getElementById('members-list');
+        const inputs = membersList.querySelectorAll('input');
+        inputs.forEach(input => {
+            input.disabled = true;
+        });
+        document.getElementById('save-members-button').style.display = 'none';
+        document.getElementById('add-member-button').style.display = 'none';
+        document.getElementById('edit-members-button').style.display = 'inline-block';
+    }
+
+    function enableEditTeamMembers() {
+        const membersList = document.getElementById('members-list');
+        const inputs = membersList.querySelectorAll('input');
+        inputs.forEach(input => {
+            input.disabled = false;
+        });
+        document.getElementById('save-members-button').style.display = 'inline-block';
+        document.getElementById('add-member-button').style.display = 'inline-block';
+        document.getElementById('edit-members-button').style.display = 'none';
+        document.getElementById('members-section').classList.remove('collapsed');
+        const headerEditButton = document.getElementById('edit-members-button-header');
+        if(headerEditButton) {
+           headerEditButton.style.display = 'none';
+        }
+    }
+
+    function loadData() {
+        const savedTeamName = localStorage.getItem('teamName');
+        if (savedTeamName) {
+            document.getElementById('display-team-name').textContent = savedTeamName;
+            document.getElementById('team-header').style.display = 'flex';
             document.getElementById('members-section').style.display = 'block';
-            document.getElementById('display-team-name').textContent = teamName;
             loadTeamMembers();
             loadUserStoriesSection();
+        } else {
+            document.getElementById('team-section').style.display = 'block';
         }
+    }
 
-        // Function to enable editing the team name
-        function enableEditTeamName() {
-            const teamHeader = document.getElementById('team-header');
-            const editSection = document.getElementById('edit-team-section');
-            const displayName = document.getElementById('display-team-name').textContent;
-            document.getElementById('edit-team-name').value = displayName;
-
-            teamHeader.style.display = 'none';
-            editSection.style.display = 'block';
-        }
-
-        // Function to save the edited team name
-        function saveEditedTeamName() {
-            const editTeamNameInput = document.getElementById('edit-team-name');
-            const newTeamName = editTeamNameInput.value.trim();
-            if (newTeamName === "") {
-                alert("Team name cannot be empty.");
-                return;
+    function loadTeamMembers() {
+        const savedMembers = localStorage.getItem('teamMembers');
+        if (savedMembers) {
+            const members = JSON.parse(savedMembers);
+            for (let member of members) {
+                addMemberRow(member.name, member.capacity);
             }
-            localStorage.setItem('teamName', newTeamName);
-            alert("Team name updated!");
-            document.getElementById('display-team-name').textContent = newTeamName;
-            document.getElementById('team-header').style.display = 'flex';
-            document.getElementById('edit-team-section').style.display = 'none';
-            loadUserStoriesSection();
+            lockTeamMembersInputs();
+        } else {
+            addMemberRow(); 
         }
+    }
 
-        // Function to add a new team member row
-        function addMemberRow(name = '', capacity = '') {
-            const membersList = document.getElementById('members-list');
+    function loadUserStoriesSection() {
+        const savedMembers = localStorage.getItem('teamMembers');
+        const storiesSection = document.getElementById('stories-section');
+        const heatmapSection = document.getElementById('heatmap-section');
+        const xaiSection = document.getElementById('xai-integration-section');
 
-            const memberDiv = document.createElement('div');
-            memberDiv.className = 'team-member';
-
-            const nameInput = document.createElement('input');
-            nameInput.type = 'text';
-            nameInput.placeholder = 'Member Name';
-            nameInput.value = name;
-
-            const capacityInput = document.createElement('input');
-            capacityInput.type = 'number';
-            capacityInput.placeholder = 'Capacity';
-            capacityInput.value = capacity;
-            capacityInput.min = "1";
-
-            const removeButton = document.createElement('button');
-            removeButton.textContent = 'Remove';
-            removeButton.className = 'remove-button';
-            removeButton.onclick = function() {
-                membersList.removeChild(memberDiv);
-            };
-
-            memberDiv.appendChild(nameInput);
-            memberDiv.appendChild(capacityInput);
-            memberDiv.appendChild(removeButton);
-
-            membersList.appendChild(memberDiv);
-        }
-
-        // Function to save team members to localStorage
-        function saveTeamMembers() {
-            const membersList = document.getElementById('members-list');
-            const members = [];
-            const memberDivs = membersList.getElementsByClassName('team-member');
-            for (let div of memberDivs) {
-                const inputs = div.getElementsByTagName('input');
-                const name = inputs[0].value.trim();
-                const capacity = inputs[1].value.trim();
-                if (name !== "" && capacity !== "") {
-                    members.push({ name, capacity });
-                }
+        if (savedMembers) {
+            const members = JSON.parse(savedMembers);
+            if (members.length > 0) {
+                storiesSection.style.display = 'block';
+                heatmapSection.style.display = 'block';
+                xaiSection.style.display = 'block'; // Show the new xAI Integration section
+                populateAssigneeDropdown();
+                loadUserStories();
+            } else {
+                storiesSection.style.display = 'none';
+                heatmapSection.style.display = 'none';
+                xaiSection.style.display = 'none';
             }
-             if (members.length === 0) {
-                alert("Please add at least one team member with capacity.");
-                return;
-            }
-            localStorage.setItem('teamMembers', JSON.stringify(members));
-            alert("Team members saved!");
-             lockTeamMembersInputs();
-            loadUserStoriesSection();
+        } else {
+            storiesSection.style.display = 'none';
+            heatmapSection.style.display = 'none';
+            xaiSection.style.display = 'none';
         }
+    }
 
-        // Function to lock team members inputs after saving
-        function lockTeamMembersInputs() {
-            const membersList = document.getElementById('members-list');
-            const inputs = membersList.querySelectorAll('input');
-            inputs.forEach(input => {
-                input.disabled = true;
+    function populateAssigneeDropdown() {
+        const assigneeSelect = document.getElementById('story-assignee');
+        assigneeSelect.innerHTML = '';
+        const savedMembers = localStorage.getItem('teamMembers');
+        if (savedMembers) {
+            const members = JSON.parse(savedMembers);
+            members.forEach(member => {
+                const option = document.createElement('option');
+                option.value = member.name;
+                option.textContent = member.name;
+                assigneeSelect.appendChild(option);
             });
-            // Hide Save button and Add Member button
-            document.getElementById('save-members-button').style.display = 'none';
-            document.getElementById('add-member-button').style.display = 'none';
-            // Show Edit Team Members button
-            document.getElementById('edit-members-button').style.display = 'inline-block';
+        }
+    }
+
+    function addUserStory() {
+        const titleInput = document.getElementById('story-title');
+        const descriptionInput = document.getElementById('story-description');
+        const pointsInput = document.getElementById('story-points');
+        const assigneeSelect = document.getElementById('story-assignee');
+
+        const title = titleInput.value.trim();
+        const description = descriptionInput.value.trim();
+        const points = pointsInput.value.trim();
+        const assignee = assigneeSelect.value;
+
+        if (title === "" || description === "" || points === "") {
+            alert("Please fill in all fields for the user story.");
+            return;
         }
 
-        // Function to unlock team members inputs for editing
-        function enableEditTeamMembers() {
-            const membersList = document.getElementById('members-list');
-            const inputs = membersList.querySelectorAll('input');
-            inputs.forEach(input => {
-                input.disabled = false;
-            });
-            // Show Save button and Add Member button
-            document.getElementById('save-members-button').style.display = 'inline-block';
-            document.getElementById('add-member-button').style.display = 'inline-block';
-            // Hide Edit Team Members button in header
-            document.getElementById('edit-members-button').style.display = 'none';
-            document.getElementById('members-section').classList.remove('collapsed'); // Open team members section
-            const headerEditButton = document.getElementById('edit-members-button-header');
-            if(headerEditButton) {
-               headerEditButton.style.display = 'none';
-            }
+        if (isNaN(points) || Number(points) <= 0) {
+            alert("Story points must be a positive number.");
+            return;
         }
 
-        // Function to load team name and team members from localStorage
-        function loadData() {
-            const savedTeamName = localStorage.getItem('teamName');
-             if (savedTeamName) {
-                document.getElementById('display-team-name').textContent = savedTeamName;
-                document.getElementById('team-header').style.display = 'flex';
-                document.getElementById('members-section').style.display = 'block';
-                loadTeamMembers();
-                loadUserStoriesSection();
-            } else {
-                document.getElementById('team-section').style.display = 'block';
-            }
+        const newStory = {
+            id: Date.now(),
+            title,
+            description,
+            points: Number(points),
+            assignee
+        };
+
+        let stories = [];
+        const savedStories = localStorage.getItem('userStories');
+        if (savedStories) {
+            stories = JSON.parse(savedStories);
         }
+        stories.push(newStory);
+        localStorage.setItem('userStories', JSON.stringify(stories));
+        alert("User story added!");
 
-         // Function to load team members from localStorage
-        function loadTeamMembers() {
-             const savedMembers = localStorage.getItem('teamMembers');
-             if (savedMembers) {
-                const members = JSON.parse(savedMembers);
-                for (let member of members) {
-                    addMemberRow(member.name, member.capacity);
-                }
-                lockTeamMembersInputs();
-            } else {
-                addMemberRow(); // Add an empty row by default
-            }
-        }
+        titleInput.value = '';
+        descriptionInput.value = '';
+        pointsInput.value = '';
 
-          // Function to load User Stories Section
-        function loadUserStoriesSection() {
-            const savedMembers = localStorage.getItem('teamMembers');
-            const storiesSection = document.getElementById('stories-section');
-            const aiActionsSection = document.getElementById('ai-actions-section');
-            if (savedMembers) {
-                const members = JSON.parse(savedMembers);
-                 if (members.length > 0) {
-                    storiesSection.style.display = 'block';
-                    aiActionsSection.style.display = 'block';
-                    populateAssigneeDropdown();
-                    loadUserStories();
-                } else {
-                    storiesSection.style.display = 'none';
-                    aiActionsSection.style.display = 'none';
-                 }
-            } else {
-                 storiesSection.style.display = 'none';
-                 aiActionsSection.style.display = 'none';
-            }
-        }
+        displayUserStories();
+        updateHeatmap();
+    }
 
-        // Function to populate the Assign To dropdown
-        function populateAssigneeDropdown() {
-            const assigneeSelect = document.getElementById('story-assignee');
-            assigneeSelect.innerHTML = ''; // Clear existing options
-            const savedMembers = localStorage.getItem('teamMembers');
-            if (savedMembers) {
-                const members = JSON.parse(savedMembers);
-                members.forEach(member => {
-                    const option = document.createElement('option');
-                    option.value = member.name;
-                    option.textContent = member.name;
-                    assigneeSelect.appendChild(option);
-                });
-            }
-        }
-
-         // Function to add a user story
-        function addUserStory() {
-            const titleInput = document.getElementById('story-title');
-            const descriptionInput = document.getElementById('story-description');
-            const pointsInput = document.getElementById('story-points');
-            const assigneeSelect = document.getElementById('story-assignee');
-
-             const title = titleInput.value.trim();
-            const description = descriptionInput.value.trim();
-            const points = pointsInput.value.trim();
-            const assignee = assigneeSelect.value;
-
-            if (title === "" || description === "" || points === "") {
-                 alert("Please fill in all fields for the user story.");
-                return;
-            }
-
-            if (isNaN(points) || Number(points) <= 0) {
-                 alert("Story points must be a positive number.");
-                return;
-            }
-
-             const newStory = {
-                id: Date.now(), // Unique identifier
-                title,
-                description,
-                points: Number(points),
-                assignee
-            };
-
-             let stories = [];
-            const savedStories = localStorage.getItem('userStories');
-            if (savedStories) {
-                stories = JSON.parse(savedStories);
-            }
-            stories.push(newStory);
-            localStorage.setItem('userStories', JSON.stringify(stories));
-            alert("User story added!");
-
-            // Clear the form
-            titleInput.value = '';
-            descriptionInput.value = '';
-            pointsInput.value = '';
-
-            displayUserStories();
-             updateHeatmap();
-        }
-
-        // Function to display user stories
-        function displayUserStories() {
-             const storiesList = document.getElementById('stories-list');
-            storiesList.innerHTML = ''; // Clear existing stories
-
-            const savedStories = localStorage.getItem('userStories');
-             if (savedStories) {
-                const stories = JSON.parse(savedStories);
-                if (stories.length === 0) {
-                    storiesList.innerHTML = '<p>No user stories added yet.</p>';
-                    return;
-                }
-
-                // Group stories by assignee
-                const storiesByAssignee = {};
-                stories.forEach(story => {
-                    if (!storiesByAssignee[story.assignee]) {
-                        storiesByAssignee[story.assignee] = [];
-                    }
-                    storiesByAssignee[story.assignee].push(story);
-                });
-
-                // Display stories under each assignee
-                for (let assignee in storiesByAssignee) {
-                    const assigneeDiv = document.createElement('div');
-                     assigneeDiv.innerHTML = `<h3>${assignee}</h3>`;
-
-                     storiesByAssignee[assignee].forEach(story => {
-                         const storyDiv = document.createElement('div');
-                        storyDiv.className = 'story';
-                         storyDiv.innerHTML = `
-                            <div class="story-header">
-                                 <p class="story-title">${story.title} (${story.points} pts)</p>
-                                <div class="story-actions">
-                                     <button onclick="editUserStory(${story.id})">Edit</button>
-                                    <button class="delete-story" onclick="deleteUserStory(${story.id})">Delete</button>
-                                </div>
-                            </div>
-                             <p>${story.description}</p>
-                         `;
-                        assigneeDiv.appendChild(storyDiv);
-                     });
-
-                     storiesList.appendChild(assigneeDiv);
-                }
-            } else {
-                storiesList.innerHTML = '<p>No user stories added yet.</p>';
-            }
-        }
-
-        // Function to load user stories
-        function loadUserStories() {
-            displayUserStories();
-             updateHeatmap();
-        }
-
-        // Function to edit a user story
-        function editUserStory(storyId) {
-             const savedStories = localStorage.getItem('userStories');
-            if (!savedStories) return;
-            let stories = JSON.parse(savedStories);
-             const story = stories.find(s => s.id === storyId);
-            if (!story) return;
-
-            // Populate the form with existing data
-            document.getElementById('story-title').value = story.title;
-            document.getElementById('story-description').value = story.description;
-            document.getElementById('story-points').value = story.points;
-            document.getElementById('story-assignee').value = story.assignee;
-
-             // Change the Add button to Update button
-            const addButton = document.querySelector('#add-story-form button');
-            addButton.textContent = 'Update User Story';
-            addButton.onclick = function() { updateUserStory(storyId); };
-        }
-
-         // Function to update a user story
-        function updateUserStory(storyId) {
-             const titleInput = document.getElementById('story-title');
-            const descriptionInput = document.getElementById('story-description');
-            const pointsInput = document.getElementById('story-points');
-            const assigneeSelect = document.getElementById('story-assignee');
-
-            const title = titleInput.value.trim();
-            const description = descriptionInput.value.trim();
-            const points = pointsInput.value.trim();
-            const assignee = assigneeSelect.value;
-
-            if (title === "" || description === "" || points === "") {
-                 alert("Please fill in all fields for the user story.");
-                 return;
-            }
-
-             if (isNaN(points) || Number(points) <= 0) {
-                 alert("Story points must be a positive number.");
-                return;
-            }
-
-            let stories = [];
-            const savedStories = localStorage.getItem('userStories');
-             if (savedStories) {
-                stories = JSON.parse(savedStories);
-            }
-
-            const storyIndex = stories.findIndex(s => s.id === storyId);
-            if (storyIndex === -1) return;
-
-            stories[storyIndex] = {
-                id: storyId,
-                title,
-                description,
-                points: Number(points),
-                assignee
-            };
-
-            localStorage.setItem('userStories', JSON.stringify(stories));
-             alert("User story updated!");
-
-             // Reset the form
-            titleInput.value = '';
-            descriptionInput.value = '';
-            pointsInput.value = '';
-            assigneeSelect.value = '';
-            const addButton = document.querySelector('#add-story-form button');
-            addButton.textContent = 'Add User Story';
-            addButton.onclick = addUserStory;
-
-            displayUserStories();
-            updateHeatmap();
-        }
-
-         // Function to delete a user story
-        function deleteUserStory(storyId) {
-            if (!confirm("Are you sure you want to delete this user story?")) return;
-
-            let stories = [];
-            const savedStories = localStorage.getItem('userStories');
-            if (savedStories) {
-                stories = JSON.parse(savedStories);
-            }
-
-             stories = stories.filter(s => s.id !== storyId);
-            localStorage.setItem('userStories', JSON.stringify(stories));
-             alert("User story deleted!");
-            displayUserStories();
-             updateHeatmap();
-        }
-
-         // Function to load User Stories Section
-         function loadUserStoriesSection() {
-             const savedMembers = localStorage.getItem('teamMembers');
-             const storiesSection = document.getElementById('stories-section');
-            const heatmapSection = document.getElementById('heatmap-section');
-             const aiActionsSection = document.getElementById('ai-actions-section');
-             if (savedMembers) {
-                const members = JSON.parse(savedMembers);
-                if (members.length > 0) {
-                    storiesSection.style.display = 'block';
-                     heatmapSection.style.display = 'block';
-                     aiActionsSection.style.display = 'block';
-                    populateAssigneeDropdown();
-                    loadUserStories();
-                } else {
-                    storiesSection.style.display = 'none';
-                    heatmapSection.style.display = 'none';
-                    aiActionsSection.style.display = 'none';
-                }
-            } else {
-                 storiesSection.style.display = 'none';
-                 heatmapSection.style.display = 'none';
-                 aiActionsSection.style.display = 'none';
-             }
-         }
-
-         // Function to update the heatmap
-        function updateHeatmap() {
-            const heatmapContainer = document.getElementById('heatmap-container');
-            heatmapContainer.innerHTML = ''; // Clear existing table
-
-             const savedMembers = localStorage.getItem('teamMembers');
-            const savedStories = localStorage.getItem('userStories');
-
-            if (!savedMembers || !savedStories) {
-                heatmapContainer.innerHTML = '<p>Add team members and user stories to see the heatmap.</p>';
-                return;
-            }
-
-             const members = JSON.parse(savedMembers);
+    function displayUserStories() {
+        const storiesList = document.getElementById('stories-list');
+        storiesList.innerHTML = '';
+        const savedStories = localStorage.getItem('userStories');
+        if (savedStories) {
             const stories = JSON.parse(savedStories);
-
-            if (members.length === 0) {
-                 heatmapContainer.innerHTML = '<p>Add team members to see the heatmap.</p>';
-                return;
-             }
-
-             if (stories.length === 0) {
-                heatmapContainer.innerHTML = '<p>Add user stories to see the heatmap.</p>';
+            if (stories.length === 0) {
+                storiesList.innerHTML = '<p>No user stories added yet.</p>';
                 return;
             }
 
-            const heatmapTable = document.createElement('table');
-            heatmapTable.id = 'heatmap-table';
-
-            // Create table header
-            const headerRow = document.createElement('tr');
-            members.forEach(member => {
-                const th = document.createElement('th');
-                th.textContent = member.name;
-                headerRow.appendChild(th);
-            });
-            heatmapTable.appendChild(headerRow);
-
-            // Calculate capacities
-            const capacities = {};
-            members.forEach(member => {
-                capacities[member.name] = Number(member.capacity);
-            });
-
-            // Calculate story points per member
-            const memberStoryPoints = {};
+            const storiesByAssignee = {};
             stories.forEach(story => {
-               if(!memberStoryPoints[story.assignee]) {
-                    memberStoryPoints[story.assignee] = 0;
+                if (!storiesByAssignee[story.assignee]) {
+                    storiesByAssignee[story.assignee] = [];
                 }
-                memberStoryPoints[story.assignee] += story.points;
+                storiesByAssignee[story.assignee].push(story);
             });
 
-            // Create table data rows for capacity status
-            const statusRow = document.createElement('tr');
-            members.forEach(member => {
-                const td = document.createElement('td');
-                let memberPoints = memberStoryPoints[member.name] || 0;
-                let capacityStatus = '';
-                if(memberPoints === capacities[member.name]) {
-                   capacityStatus = "at capacity";
-                   td.classList.add('at-capacity')
-               } else if (memberPoints > capacities[member.name]) {
-                  capacityStatus = "above capacity";
-                   td.classList.add('above-capacity');
-               } else {
-                   capacityStatus = "below capacity";
-                    td.classList.add('below-capacity')
-               }
-                td.textContent = capacityStatus
-               statusRow.appendChild(td)
-            });
-            heatmapTable.appendChild(statusRow);
-            heatmapContainer.appendChild(heatmapTable);
-         }
+            for (let assignee in storiesByAssignee) {
+                const assigneeDiv = document.createElement('div');
+                assigneeDiv.innerHTML = `<h3>${assignee}</h3>`;
 
-        // **AI Action Functions**
-        async function generateSprintGoal() {
-            const userStories = JSON.parse(localStorage.getItem('userStories') || '[]');
-            const teamMembers = JSON.parse(localStorage.getItem('teamMembers') || '[]');
-            const outputDiv = document.getElementById('ai-output');
-            outputDiv.textContent = 'Generating Sprint Goal...';
-
-            if (userStories.length === 0 || teamMembers.length === 0) {
-                outputDiv.textContent = 'Please add user stories and team members to generate a sprint goal.';
-                return;
-            }
-
-            const contextStories = userStories.map(story => `- ${story.title}: ${story.description} (Points: ${story.points}, Assigned to: ${story.assignee})`).join('\n');
-            const contextMembers = teamMembers.map(member => `- ${member.name} (Capacity: ${member.capacity})`).join('\n');
-
-            const prompt = `Based on the following user stories and the team members working on them, generate a common SMART sprint goal:\n\nUser Stories:\n${contextStories}\n\nTeam Members:\n${contextMembers}`;
-            const generatedText = await callxAI(prompt);
-            outputDiv.textContent = generatedText;
-        }
-
-        async function generateWorkSummary() {
-            const userStories = JSON.parse(localStorage.getItem('userStories') || '[]');
-            const teamMembers = JSON.parse(localStorage.getItem('teamMembers') || '[]');
-            const outputDiv = document.getElementById('ai-output');
-            outputDiv.textContent = 'Generating Work Summary...';
-
-            if (userStories.length === 0 || teamMembers.length === 0) {
-                outputDiv.textContent = 'Please add user stories and team members to generate a work summary.';
-                return;
-            }
-
-            const context
-            const contextStories = userStories.map(story => `- ${story.title}: ${story.description} (Points: ${story.points}, Assigned to: ${story.assignee})`).join('\n');
-            const contextMembers = teamMembers.map(member => `- ${member.name}`).join('\n');
-
-            const prompt = `Generate a summary of the work being done by the team based on the following user stories and team members:\n\nUser Stories:\n${contextStories}\n\nTeam Members:\n${contextMembers}`;
-            const generatedText = await callxAI(prompt);
-            outputDiv.textContent = generatedText;
-        }
-
-        async function generateSprintReview() {
-            const userStories = JSON.parse(localStorage.getItem('userStories') || '[]');
-            const outputDiv = document.getElementById('ai-output');
-            outputDiv.textContent = 'Generating Sprint Review...';
-
-            if (userStories.length === 0) {
-                outputDiv.textContent = 'Please add user stories to generate a sprint review.';
-                return;
-            }
-
-            const contextStories = userStories.map(story => `- ${story.title}: ${story.description}`).join('\n');
-
-            const prompt = `Generate a non-technical 2-minute sprint review using bullet points based on the following user stories (assuming they are completed):\n\nUser Stories:\n${contextStories}`;
-            const generatedText = await callxAI(prompt);
-            outputDiv.textContent = generatedText;
-        }
-
-        // **Helper function to call the xAI API**
-        async function callxAI(prompt) {
-            // **IMPORTANT:** Replace 'YOUR_XAI_API_KEY' with your actual xAI API key.
-            // For production, store this securely in an environment variable (like in Netlify settings).
-            const apiKey = process.env.XAI_API_KEY || 'YOUR_XAI_API_KEY'; // Adjust based on your Netlify setup
-            const apiUrl = 'https://api.groq.com/openai/v1/chat/completions'; // Example endpoint, adjust as needed for xAI
-
-            try {
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${apiKey}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        model: 'mixtral-8x7b-32768', // Or the model you intend to use
-                        messages: [{
-                            role: 'user',
-                            content: prompt
-                        }]
-                    })
+                storiesByAssignee[assignee].forEach(story => {
+                    const storyDiv = document.createElement('div');
+                    storyDiv.className = 'story';
+                    storyDiv.innerHTML = `
+                        <div class="story-header">
+                            <p class="story-title">${story.title} (${story.points} pts)</p>
+                            <div class="story-actions">
+                                <button onclick="editUserStory(${story.id})">Edit</button>
+                                <button class="delete-story" onclick="deleteUserStory(${story.id})">Delete</button>
+                            </div>
+                        </div>
+                        <p>${story.description}</p>
+                    `;
+                    assigneeDiv.appendChild(storyDiv);
                 });
 
-                if (!response.ok) {
-                    const message = `API Error: ${response.status} - ${await response.text()}`;
-                    console.error(message);
-                    return message;
-                }
-
-                const data = await response.json();
-                return data.choices[0].message.content.trim();
-
-            } catch (error) {
-                console.error('Error calling xAI API:', error);
-                return `Error generating response: ${error.message}`;
+                storiesList.appendChild(assigneeDiv);
             }
+        } else {
+            storiesList.innerHTML = '<p>No user stories added yet.</p>';
+        }
+    }
+
+    function loadUserStories() {
+        displayUserStories();
+        updateHeatmap();
+    }
+
+    function editUserStory(storyId) {
+        const savedStories = localStorage.getItem('userStories');
+        if (!savedStories) return;
+        let stories = JSON.parse(savedStories);
+        const story = stories.find(s => s.id === storyId);
+        if (!story) return;
+
+        document.getElementById('story-title').value = story.title;
+        document.getElementById('story-description').value = story.description;
+        document.getElementById('story-points').value = story.points;
+        document.getElementById('story-assignee').value = story.assignee;
+
+        const addButton = document.querySelector('#add-story-form button');
+        addButton.textContent = 'Update User Story';
+        addButton.onclick = function() { updateUserStory(storyId); };
+    }
+
+    function updateUserStory(storyId) {
+        const titleInput = document.getElementById('story-title');
+        const descriptionInput = document.getElementById('story-description');
+        const pointsInput = document.getElementById('story-points');
+        const assigneeSelect = document.getElementById('story-assignee');
+
+        const title = titleInput.value.trim();
+        const description = descriptionInput.value.trim();
+        const points = pointsInput.value.trim();
+        const assignee = assigneeSelect.value;
+
+        if (title === "" || description === "" || points === "") {
+            alert("Please fill in all fields for the user story.");
+            return;
         }
 
-        // Initialize the page by loading existing data if any
-        window.onload = loadData;
-    </script>
+        if (isNaN(points) || Number(points) <= 0) {
+            alert("Story points must be a positive number.");
+            return;
+        }
 
+        let stories = [];
+        const savedStories = localStorage.getItem('userStories');
+        if (savedStories) {
+            stories = JSON.parse(savedStories);
+        }
+
+        const storyIndex = stories.findIndex(s => s.id === storyId);
+        if (storyIndex === -1) return;
+
+        stories[storyIndex] = {
+            id: storyId,
+            title,
+            description,
+            points: Number(points),
+            assignee
+        };
+
+        localStorage.setItem('userStories', JSON.stringify(stories));
+        alert("User story updated!");
+
+        titleInput.value = '';
+        descriptionInput.value = '';
+        pointsInput.value = '';
+        assigneeSelect.value = '';
+        const addButton = document.querySelector('#add-story-form button');
+        addButton.textContent = 'Add User Story';
+        addButton.onclick = addUserStory;
+
+        displayUserStories();
+        updateHeatmap();
+    }
+
+    function deleteUserStory(storyId) {
+        if (!confirm("Are you sure you want to delete this user story?")) return;
+
+        let stories = [];
+        const savedStories = localStorage.getItem('userStories');
+        if (savedStories) {
+            stories = JSON.parse(savedStories);
+        }
+
+        stories = stories.filter(s => s.id !== storyId);
+        localStorage.setItem('userStories', JSON.stringify(stories));
+        alert("User story deleted!");
+        displayUserStories();
+        updateHeatmap();
+    }
+
+    function updateHeatmap() {
+        const heatmapContainer = document.getElementById('heatmap-container');
+        heatmapContainer.innerHTML = ''; 
+
+        const savedMembers = localStorage.getItem('teamMembers');
+        const savedStories = localStorage.getItem('userStories');
+
+        if (!savedMembers || !savedStories) {
+            heatmapContainer.innerHTML = '<p>Add team members and user stories to see the heatmap.</p>';
+            return;
+        }
+
+        const members = JSON.parse(savedMembers);
+        const stories = JSON.parse(savedStories);
+
+        if (members.length === 0) {
+            heatmapContainer.innerHTML = '<p>Add team members to see the heatmap.</p>';
+            return;
+        }
+
+        if (stories.length === 0) {
+            heatmapContainer.innerHTML = '<p>Add user stories to see the heatmap.</p>';
+            return;
+        }
+
+        const heatmapTable = document.createElement('table');
+        heatmapTable.id = 'heatmap-table';
+
+        const headerRow = document.createElement('tr');
+        members.forEach(member => {
+            const th = document.createElement('th');
+            th.textContent = member.name;
+            headerRow.appendChild(th);
+        });
+        heatmapTable.appendChild(headerRow);
+
+        const capacities = {};
+        members.forEach(member => {
+            capacities[member.name] = Number(member.capacity);
+        });
+
+        const memberStoryPoints = {};
+        stories.forEach(story => {
+            if(!memberStoryPoints[story.assignee]) {
+                memberStoryPoints[story.assignee] = 0;
+            }
+            memberStoryPoints[story.assignee] += story.points;
+        });
+
+        const statusRow = document.createElement('tr');
+        members.forEach(member => {
+            const td = document.createElement('td');
+            let memberPoints = memberStoryPoints[member.name] || 0;
+            let capacityStatus = '';
+            if(memberPoints === capacities[member.name]) {
+                capacityStatus = "at capacity";
+                td.classList.add('at-capacity')
+            } else if (memberPoints > capacities[member.name]) {
+                capacityStatus = "above capacity";
+                td.classList.add('above-capacity');
+            } else {
+                capacityStatus = "below capacity";
+                td.classList.add('below-capacity')
+            }
+            td.textContent = capacityStatus
+            statusRow.appendChild(td)
+        });
+        heatmapTable.appendChild(statusRow);
+        heatmapContainer.appendChild(heatmapTable);
+    }
+
+    // -------------------
+    // xAI API Integration
+    // -------------------
+
+    // TODO: Replace the endpoint below with the actual xAI API endpoint
+    // TODO: Insert your API key securely. For Netlify, you would store it as an environment variable
+    // and reference it in a serverless function or during build time, rather than inline here.
+    const XAI_API_ENDPOINT = "https://api.xai.example.com/generate"; // Example placeholder
+    const XAI_API_KEY = "YOUR_XAI_API_KEY_HERE"; // Example placeholder - DO NOT HARD-CODE IN PRODUCTION
+
+    document.getElementById('generate-sprint-goal').addEventListener('click', generateSprintGoal);
+    document.getElementById('generate-work-summary').addEventListener('click', generateWorkSummary);
+    document.getElementById('generate-sprint-review').addEventListener('click', generateSprintReview);
+
+    async function generateSprintGoal() {
+        const prompt = buildSprintGoalPrompt();
+        await callXaiApi(prompt, "Generate a SMART Sprint Goal:");
+    }
+
+    async function generateWorkSummary() {
+        const prompt = buildWorkSummaryPrompt();
+        await callXaiApi(prompt, "Generate a Work Summary:");
+    }
+
+    async function generateSprintReview() {
+        const prompt = buildSprintReviewPrompt();
+        await callXaiApi(prompt, "Generate a 2-min Sprint Review (bullet points):");
+    }
+
+    function buildSprintGoalPrompt() {
+        // Gather the user stories as context
+        const stories = JSON.parse(localStorage.getItem('userStories') || '[]');
+        let context = "User Stories:\n";
+        stories.forEach(story => {
+            context += `- ${story.title} (${story.points} pts): ${story.description}\n`;
+        });
+        context += "\nThe team needs a SMART sprint goal based on these stories.";
+
+        return context;
+    }
+
+    function buildWorkSummaryPrompt() {
+        // You can also gather team info and stories to summarize what the team is working on
+        const teamMembers = JSON.parse(localStorage.getItem('teamMembers') || '[]');
+        const stories = JSON.parse(localStorage.getItem('userStories') || '[]');
+
+        let context = "Team Members and Capacities:\n";
+        teamMembers.forEach(member => {
+            context += `- ${member.name}: ${member.capacity} pts capacity\n`;
+        });
+
+        context += "\nUser Stories:\n";
+        stories.forEach(story => {
+            context += `- ${story.title} (${story.points} pts) assigned to ${story.assignee}\n`;
+        });
+
+        context += "\nPlease provide a summary of the current work situation for the team.";
+
+        return context;
+    }
+
+    function buildSprintReviewPrompt() {
+        // Non-technical 2 min sprint review in bullet points
+        const stories = JSON.parse(localStorage.getItem('userStories') || '[]');
+        let context = "User Stories completed/being worked on:\n";
+        stories.forEach(story => {
+            context += `- ${story.title}: ${story.description}\n`;
+        });
+        context += "\nGenerate a non-technical sprint review as bullet points (approx. 2 minutes).";
+
+        return context;
+    }
+
+    async function callXaiApi(prompt, userRequest) {
+        const outputDiv = document.getElementById('llm-output');
+        outputDiv.textContent = "Generating... Please wait.";
+
+        try {
+            const response = await fetch(XAI_API_ENDPOINT, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    // TODO: Insert authorization header if required by your xAI API:
+                    // e.g. 'Authorization': `Bearer ${XAI_API_KEY}`
+                },
+                body: JSON.stringify({
+                    prompt: userRequest + "\n" + prompt,
+                    // Additional parameters as required by your API
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(`API call failed with status ${response.status}`);
+            }
+
+            const data = await response.json();
+            // Assuming the LLM response is in data.result or similar
+            // Adjust based on the actual API response structure
+            outputDiv.textContent = data.result || "No response returned from API.";
+        } catch (error) {
+            console.error("Error calling xAI API:", error);
+            outputDiv.textContent = "Error generating content. Check console for details.";
+        }
+    }
+
+    window.onload = loadData;
+</script>
 </body>
 </html>
