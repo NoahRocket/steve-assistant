@@ -161,6 +161,6 @@ function buildSprintReviewContext(stories) {
     stories.forEach(story => {
         context += `- ${story.title}: ${story.description}\n`;
     });
-    context += "\nGenerate a non-technical sprint review as bullet points (approx. 2 minutes).";
+    context += "\nGenerate a non-technical sprint review as bullet points, don't go too much into detail, stay at a higher level of abstraction (approx. 2 minutes).";
     return context;
 }
