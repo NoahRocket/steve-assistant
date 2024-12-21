@@ -176,6 +176,17 @@
         .below-capacity {
             background-color: #aaaaff; /* Blue */
         }
+        /* LLM Output Styles */
+        #llm-output {
+            margin-top: 20px;
+            background: #f0f0f0;
+            padding: 10px;
+            border-radius: 5px;
+            /* Preserve line breaks and spacing if the content has them. */
+            white-space: pre-wrap;
+            line-height: 1.6;
+            font-size: 16px;
+        }
     </style>
 </head>
 <body>
@@ -262,14 +273,16 @@
     <button id="generate-sprint-goal">Generate Sprint Goal</button>
     <button id="generate-work-summary">Generate Work Summary</button>
     <button id="generate-sprint-review">Generate Sprint Review</button>
-    <div id="llm-output" style="margin-top: 20px; background:#f0f0f0; padding:10px; border-radius:5px;">
+
+    <!-- LLM Output Container -->
+    <div id="llm-output">
         <!-- LLM responses will appear here -->
     </div>
 </div>
 
 <script>
-     // Function to toggle a section's collapsed state
-     function toggleSection(sectionId) {
+    // Function to toggle a section's collapsed state
+    function toggleSection(sectionId) {
         const section = document.getElementById(sectionId);
         section.classList.toggle('collapsed');
     }
@@ -701,16 +714,16 @@
             let capacityStatus = '';
             if(memberPoints === capacities[member.name]) {
                 capacityStatus = "at capacity";
-                td.classList.add('at-capacity')
+                td.classList.add('at-capacity');
             } else if (memberPoints > capacities[member.name]) {
                 capacityStatus = "above capacity";
                 td.classList.add('above-capacity');
             } else {
                 capacityStatus = "below capacity";
-                td.classList.add('below-capacity')
+                td.classList.add('below-capacity');
             }
-            td.textContent = capacityStatus
-            statusRow.appendChild(td)
+            td.textContent = capacityStatus;
+            statusRow.appendChild(td);
         });
         heatmapTable.appendChild(statusRow);
         heatmapContainer.appendChild(heatmapTable);
@@ -742,7 +755,7 @@
 
     async function callXaiApi(action, stories, teamMembers = []) {
         const outputDiv = document.getElementById('llm-output');
-        outputDiv.textContent = "Generating... Please wait.";
+        outputDiv.innerHTML = "<em>Generating... Please wait.</em>";
 
         try {
             const body = { action, stories };
@@ -763,10 +776,11 @@
             }
 
             const data = await response.json();
-            outputDiv.textContent = data.result || "No response returned from API.";
+            // Render the result as HTML so that any markdown/bold formatting can be displayed
+            outputDiv.innerHTML = data.result || "<em>No response returned from API.</em>";
         } catch (error) {
             console.error("Error calling xaiProxy:", error);
-            outputDiv.textContent = "Error generating content. Check console for details.";
+            outputDiv.innerHTML = "<strong>Error generating content. Check console for details.</strong>";
         }
     }
 
