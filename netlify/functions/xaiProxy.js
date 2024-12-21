@@ -152,7 +152,7 @@ function buildWorkSummaryContext(stories, teamMembers) {
         context += `- ${story.title} (${story.points} pts) assigned to ${story.assignee}\n`;
     });
 
-    context += "\nPlease provide a summary of the current work situation for the team.";
+    context += "\nPlease provide a short non-technical summary of what each team member is working on.";
     return context;
 }
 
