@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>Steve</title>
+    <!-- Load the Marked library from CDN for Markdown parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -176,16 +179,24 @@
         .below-capacity {
             background-color: #aaaaff; /* Blue */
         }
+
         /* LLM Output Styles */
         #llm-output {
             margin-top: 20px;
             background: #f0f0f0;
             padding: 10px;
             border-radius: 5px;
-            /* Preserve line breaks and spacing if the content has them. */
-            white-space: pre-wrap;
+            /* Use normal text flow, since we'll convert Markdown to HTML */
             line-height: 1.6;
             font-size: 16px;
+        }
+        /* Provide basic styling for markdown headings, etc. */
+        #llm-output h1, #llm-output h2, #llm-output h3 {
+            margin-top: 1em;
+            margin-bottom: 0.5em;
+        }
+        #llm-output ul, #llm-output ol {
+            margin-left: 2em;
         }
     </style>
 </head>
@@ -274,7 +285,7 @@
     <button id="generate-work-summary">Generate Work Summary</button>
     <button id="generate-sprint-review">Generate Sprint Review</button>
 
-    <!-- LLM Output Container -->
+    <!-- LLM Output Container (markdown-enabled) -->
     <div id="llm-output">
         <!-- LLM responses will appear here -->
     </div>
@@ -732,7 +743,6 @@
     // -------------------
     // xAI API Integration
     // -------------------
-
     document.getElementById('generate-sprint-goal').addEventListener('click', generateSprintGoal);
     document.getElementById('generate-work-summary').addEventListener('click', generateWorkSummary);
     document.getElementById('generate-sprint-review').addEventListener('click', generateSprintReview);
@@ -776,8 +786,13 @@
             }
 
             const data = await response.json();
-            // Render the result as HTML so that any markdown/bold formatting can be displayed
-            outputDiv.innerHTML = data.result || "<em>No response returned from API.</em>";
+            const rawMarkdown = data.result || "*No response returned from API.*";
+
+            // Parse the string as Markdown to convert **bold** and *italics* into HTML
+            const htmlContent = marked.parse(rawMarkdown);
+
+            // Display the rendered Markdown
+            outputDiv.innerHTML = htmlContent;
         } catch (error) {
             console.error("Error calling xaiProxy:", error);
             outputDiv.innerHTML = "<strong>Error generating content. Check console for details.</strong>";
