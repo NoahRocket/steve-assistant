@@ -1,8 +1,8 @@
 exports.handler = async (event) => {
-    // Ensure XAI_API_KEY is set in Netlify environment variables
-    const API_KEY = process.env.XAI_API_KEY; 
+    // Ensure OPENAI_API_KEY is set in Netlify environment variables
+    const API_KEY = process.env.OPENAI_API_KEY; 
     if (!API_KEY) {
-        console.error('XAI_API_KEY is not set in environment variables.');
+        console.error('OPENAI_API_KEY is not set in environment variables.');
         return {
             statusCode: 500,
             body: JSON.stringify({ error: 'Internal Server Error: Missing API Key.' }),
@@ -35,13 +35,11 @@ exports.handler = async (event) => {
     let userRequest, promptContext;
     switch (action) {
         case 'sprintGoal':
-            // Generate a SMART sprint goal based on user stories
             promptContext = buildSprintGoalContext(stories);
             userRequest = "Generate a SMART Sprint Goal:";
             break;
 
         case 'workSummary':
-            // Generate a work summary based on stories and team members
             if (!teamMembers || !Array.isArray(teamMembers)) {
                 return {
                     statusCode: 400,
@@ -53,7 +51,6 @@ exports.handler = async (event) => {
             break;
 
         case 'sprintReview':
-            // Generate a 2-min sprint review in non-technical bullet points
             promptContext = buildSprintReviewContext(stories);
             userRequest = "Generate a 2-min Sprint Review (bullet points):";
             break;
@@ -65,7 +62,7 @@ exports.handler = async (event) => {
             };
     }
 
-    // Construct the messages for the xAI API
+    // Construct the messages for the OpenAI API
     const messages = [
         {
             role: 'system',
@@ -75,16 +72,16 @@ exports.handler = async (event) => {
     ];
 
     try {
-        // Adjust endpoint and model based on your xAI provider documentation
-        const XAI_API_ENDPOINT = "https://api.x.ai/v1/chat/completions";
-        const response = await fetch(XAI_API_ENDPOINT, {
+        // OpenAI Chat Completions endpoint
+        const OPENAI_API_ENDPOINT = "https://api.openai.com/v1/chat/completions";
+        const response = await fetch(OPENAI_API_ENDPOINT, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${API_KEY}`,
             },
             body: JSON.stringify({
-                model: 'grok-2-1212', // Update the model name if necessary
+                model: 'gpt-3.5-turbo', // Adjust model if desired
                 messages: messages,
                 stream: false,
                 temperature: 0.1, 
@@ -93,19 +90,16 @@ exports.handler = async (event) => {
 
         if (!response.ok) {
             const errorText = await response.text();
-            console.error('xAI API request failed:', response.status, errorText);
+            console.error('OpenAI API request failed:', response.status, errorText);
             return {
                 statusCode: response.status,
-                body: JSON.stringify({ error: `xAI API request failed: ${errorText}` }),
+                body: JSON.stringify({ error: `OpenAI API request failed: ${errorText}` }),
             };
         }
 
         const data = await response.json();
 
-        // -------------------
-        // **Fix Applied Below**
-        // -------------------
-        // Extract the assistant's message content from the xAI API response
+        // Extract the assistant's message content from the OpenAI API response
         let completion = "No response returned from API.";
         if (data && data.choices && Array.isArray(data.choices) && data.choices.length > 0) {
             if (data.choices[0].message && data.choices[0].message.content) {
@@ -118,12 +112,11 @@ exports.handler = async (event) => {
             statusCode: 200,
             body: JSON.stringify({ result: completion }),
         };
-        // -------------------
     } catch (error) {
-        console.error('Error calling xAI API:', error);
+        console.error('Error calling OpenAI API:', error);
         return {
             statusCode: 500,
-            body: JSON.stringify({ error: 'Failed to fetch data from xAI API' }),
+            body: JSON.stringify({ error: 'Failed to fetch data from OpenAI API' }),
         };
     }
 };
